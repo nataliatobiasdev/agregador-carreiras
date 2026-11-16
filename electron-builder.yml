@@ -1,0 +1,32 @@
+appId: com.nataliatobias.cam
+productName: Career Application Manager
+copyright: Copyright © 2026 Natalia Tobias
+directories:
+  output: dist
+  buildResources: build
+files:
+  - out/**
+  - package.json
+asarUnpack:
+  - '**/node_modules/better-sqlite3/**'
+  - '**/node_modules/bindings/**'
+  - '**/node_modules/file-uri-to-path/**'
+npmRebuild: true
+win:
+  target:
+    - target: nsis
+      arch: [x64]
+  artifactName: CAM-Setup-${version}.${ext}
+nsis:
+  # Per-user install: no administrator rights needed (spec section 6).
+  oneClick: false
+  perMachine: false
+  allowElevation: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  shortcutName: Career Application Manager
+  # User data lives in %APPDATA%\CAM and is never removed by the uninstaller.
+  deleteAppDataOnUninstall: false
+linux:
+  target: dir
