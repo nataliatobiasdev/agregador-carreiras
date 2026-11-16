@@ -1,7 +1,11 @@
 import { existsSync, readdirSync, rmSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
-import { createApplication, deleteApplication, restoreApplication } from '../../src/main/services/applications'
+import {
+  createApplication,
+  deleteApplication,
+  restoreApplication
+} from '../../src/main/services/applications'
 import { createCompany, deleteCompany, updateCompany } from '../../src/main/services/companies'
 import { createContact } from '../../src/main/services/contacts'
 import {
@@ -12,18 +16,34 @@ import {
   storedPath,
   verifyFileIntegrity
 } from '../../src/main/services/files'
-import { createNote, listNotes, noteRevisionsOf, restoreNoteRevision, setNoteDeleted, updateNote } from '../../src/main/services/notes'
+import {
+  createNote,
+  listNotes,
+  noteRevisionsOf,
+  restoreNoteRevision,
+  setNoteDeleted,
+  updateNote
+} from '../../src/main/services/notes'
 import { rebuildSearchIndex, search } from '../../src/main/services/search'
 import { listTrash, purgeExpired, purgeFromTrash, restoreFromTrash } from '../../src/main/services/trash'
 import { DAY, makeContext, tempDir } from '../helpers/context'
 
-const base = { company: { name: 'Mercado Livre' }, title: 'Arquiteta de Soluções', appliedAt: '2026-11-15T10:00:00.000Z', platform: 'linkedin' }
+const base = {
+  company: { name: 'Mercado Livre' },
+  title: 'Arquiteta de Soluções',
+  appliedAt: '2026-11-15T10:00:00.000Z',
+  platform: 'linkedin'
+}
 
 describe('notes', () => {
   it('creates from the kind template and keeps at most one revision per minute', () => {
     const ctx = makeContext()
     const { id: appId } = createApplication(ctx, base)
-    const note = createNote(ctx, { kind: 'interview_prep', title: 'Preparação', owner: { applicationId: appId } })
+    const note = createNote(ctx, {
+      kind: 'interview_prep',
+      title: 'Preparação',
+      owner: { applicationId: appId }
+    })
     expect(note.bodyMd).toContain('Perguntas para fazer')
     expect(note.ownerLabel).toBe('Arquiteta de Soluções — Mercado Livre')
     updateNote(ctx, { id: note.id, bodyMd: 'v2' })
@@ -42,9 +62,15 @@ describe('notes', () => {
     const ctx = makeContext()
     const { id: appId } = createApplication(ctx, base)
     const company = createCompany(ctx, { name: 'Outra' })
-    expect(() => createNote(ctx, { kind: 'free', title: 'x', owner: { applicationId: appId, companyId: company.id } })).toThrow()
+    expect(() =>
+      createNote(ctx, { kind: 'free', title: 'x', owner: { applicationId: appId, companyId: company.id } })
+    ).toThrow()
     const n = createNote(ctx, { kind: 'free', title: 'Geral' })
-    expect(() => ctx.sqlite.prepare('UPDATE notes SET application_id = ?, company_id = ? WHERE id = ?').run(appId, company.id, n.id)).toThrow(/CHECK/)
+    expect(() =>
+      ctx.sqlite
+        .prepare('UPDATE notes SET application_id = ?, company_id = ? WHERE id = ?')
+        .run(appId, company.id, n.id)
+    ).toThrow(/CHECK/)
   })
 
   it('soft delete and restore', () => {
@@ -66,7 +92,10 @@ describe('attachments', () => {
     writeFileSync(src, '%PDF-1.4 conteúdo de teste')
     const att1 = addAttachment(ctx, { applicationId: a1, source: { path: src }, kind: 'job_description' })
     const att2 = addAttachment(ctx, { applicationId: a2, source: { path: src } })
-    addAttachment(ctx, { applicationId: a1, source: { bytes: new TextEncoder().encode('%PDF-1.4 conteúdo de teste'), name: 'copia.pdf' } })
+    addAttachment(ctx, {
+      applicationId: a1,
+      source: { bytes: new TextEncoder().encode('%PDF-1.4 conteúdo de teste'), name: 'copia.pdf' }
+    })
     expect(att1.fileId).toBe(att2.fileId)
     expect(att1.mime).toBe('application/pdf')
     expect((ctx.sqlite.prepare('SELECT count(*) AS n FROM files').get() as { n: number }).n).toBe(1)
@@ -81,7 +110,11 @@ describe('attachments', () => {
   it('keeps the blob while any record references it and removes it after the last purge', () => {
     const ctx = makeContext()
     const { id } = createApplication(ctx, base)
-    const att = addAttachment(ctx, { applicationId: id, source: { bytes: new Uint8Array([1, 2, 3]), name: 'print.png', mime: 'image/png' }, kind: 'application_proof' })
+    const att = addAttachment(ctx, {
+      applicationId: id,
+      source: { bytes: new Uint8Array([1, 2, 3]), name: 'print.png', mime: 'image/png' },
+      kind: 'application_proof'
+    })
     const blob = storedPath(ctx, att.sha256)
     setAttachmentDeleted(ctx, att.id, true)
     expect(existsSync(blob)).toBe(true)
@@ -92,7 +125,9 @@ describe('attachments', () => {
 
   it('a database failure leaves no file in the temporary folder', () => {
     const ctx = makeContext()
-    expect(() => addAttachment(ctx, { applicationId: 'missing', source: { bytes: new Uint8Array([9]), name: 'x.txt' } })).toThrow()
+    expect(() =>
+      addAttachment(ctx, { applicationId: 'missing', source: { bytes: new Uint8Array([9]), name: 'x.txt' } })
+    ).toThrow()
     expect(readdirSync(ctx.paths.filesTmp)).toHaveLength(0)
   })
 
@@ -116,11 +151,23 @@ describe('search', () => {
     const ctx = makeContext()
     const { id } = createApplication(ctx, { ...base, jobDescription: 'Experiência com mensageria e Kafka' })
     createContact(ctx, { name: 'Joana Recrutadora', email: 'joana@exemplo.com' })
-    createNote(ctx, { kind: 'free', title: 'Pesquisa', bodyMd: 'Cultura de inovação', owner: { applicationId: id } })
-    addAttachment(ctx, { applicationId: id, source: { bytes: new Uint8Array([1]), name: 'Currículo Backend.pdf' } })
+    createNote(ctx, {
+      kind: 'free',
+      title: 'Pesquisa',
+      bodyMd: 'Cultura de inovação',
+      owner: { applicationId: id }
+    })
+    addAttachment(ctx, {
+      applicationId: id,
+      source: { bytes: new Uint8Array([1]), name: 'Currículo Backend.pdf' }
+    })
     expect(search(ctx, 'arquiteta')[0]).toMatchObject({ entityType: 'application', applicationId: id })
     expect(search(ctx, 'mensageria').map((r) => r.entityType)).toContain('application')
-    expect(search(ctx, 'mercado').map((r) => r.entityType).sort()).toEqual(['application', 'company'])
+    expect(
+      search(ctx, 'mercado')
+        .map((r) => r.entityType)
+        .sort()
+    ).toEqual(['application', 'company'])
     expect(search(ctx, 'joana')[0]?.entityType).toBe('contact')
     expect(search(ctx, 'inovacao')[0]).toMatchObject({ entityType: 'note', applicationId: id })
     expect(search(ctx, 'curriculo')[0]).toMatchObject({ entityType: 'attachment', applicationId: id })
@@ -131,7 +178,9 @@ describe('search', () => {
   it('follows renames, deletes and restores, and rebuilds from scratch', () => {
     const ctx = makeContext()
     const { id } = createApplication(ctx, base)
-    const company = ctx.sqlite.prepare('SELECT company_id AS c FROM applications WHERE id = ?').get(id) as { c: string }
+    const company = ctx.sqlite.prepare('SELECT company_id AS c FROM applications WHERE id = ?').get(id) as {
+      c: string
+    }
     updateCompany(ctx, company.c, { name: 'Meli' })
     expect(search(ctx, 'meli').length).toBe(2)
     deleteApplication(ctx, id)
@@ -148,7 +197,10 @@ describe('trash', () => {
   it('lists deleted items with days left and purges expired ones on schedule', () => {
     const ctx = makeContext()
     const { id } = createApplication(ctx, base)
-    const att = addAttachment(ctx, { applicationId: id, source: { bytes: new Uint8Array([7]), name: 'x.txt' } })
+    const att = addAttachment(ctx, {
+      applicationId: id,
+      source: { bytes: new Uint8Array([7]), name: 'x.txt' }
+    })
     createNote(ctx, { kind: 'free', title: 'Nota', owner: { applicationId: id } })
     deleteApplication(ctx, id)
     ctx.clock.advance(5 * DAY)
@@ -160,7 +212,10 @@ describe('trash', () => {
     expect(existsSync(storedPath(ctx, att.sha256))).toBe(false)
     expect((ctx.sqlite.prepare('SELECT count(*) AS n FROM notes').get() as { n: number }).n).toBe(0)
     // History survives a permanent delete
-    expect((ctx.sqlite.prepare(`SELECT count(*) AS n FROM audit_log WHERE entity_id = ?`).get(id) as { n: number }).n).toBeGreaterThan(0)
+    expect(
+      (ctx.sqlite.prepare(`SELECT count(*) AS n FROM audit_log WHERE entity_id = ?`).get(id) as { n: number })
+        .n
+    ).toBeGreaterThan(0)
     expect(() => ctx.sqlite.prepare('DELETE FROM audit_log').run()).toThrow(/append-only/)
   })
 

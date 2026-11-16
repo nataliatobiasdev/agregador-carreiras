@@ -80,7 +80,9 @@ function stamp(d: Date): string {
 export function countRows(db: Sqlite): Record<string, number> {
   const counts: Record<string, number> = {}
   const existing = new Set(
-    (db.prepare(`SELECT name FROM sqlite_master WHERE type = 'table'`).all() as { name: string }[]).map((r) => r.name)
+    (db.prepare(`SELECT name FROM sqlite_master WHERE type = 'table'`).all() as { name: string }[]).map(
+      (r) => r.name
+    )
   )
   for (const t of COUNTED_TABLES) {
     if (!existing.has(t)) continue
@@ -89,7 +91,10 @@ export function countRows(db: Sqlite): Record<string, number> {
   return counts
 }
 
-function writeZip(entries: Array<{ name: string; file?: string; buffer?: Buffer }>, target: string): Promise<void> {
+function writeZip(
+  entries: Array<{ name: string; file?: string; buffer?: Buffer }>,
+  target: string
+): Promise<void> {
   return new Promise((resolve, reject) => {
     const zip = new yazl.ZipFile()
     for (const e of entries) {
@@ -107,7 +112,8 @@ function writeZip(entries: Array<{ name: string; file?: string; buffer?: Buffer 
 function extractZip(zipPath: string, targetDir: string): Promise<string[]> {
   return new Promise((resolve, reject) => {
     yauzl.open(zipPath, { lazyEntries: true, autoClose: true }, (err, zip) => {
-      if (err || !zip) return reject(new AppError('VALIDATION', 'O arquivo não é um backup válido (zip ilegível).'))
+      if (err || !zip)
+        return reject(new AppError('VALIDATION', 'O arquivo não é um backup válido (zip ilegível).'))
       const names: string[] = []
       zip.on('error', reject)
       zip.on('end', () => resolve(names))
@@ -138,7 +144,10 @@ function extractZip(zipPath: string, targetDir: string): Promise<string[]> {
 }
 
 /** Creates a backup zip in the backups folder and returns its info. */
-export async function createBackup(ctx: AppContext, kind: BackupManifest['kind'] = 'manual'): Promise<BackupInfo> {
+export async function createBackup(
+  ctx: AppContext,
+  kind: BackupManifest['kind'] = 'manual'
+): Promise<BackupInfo> {
   const now = ctx.now()
   const staging = join(ctx.paths.tmp, `backup-${newId()}`)
   mkdirSync(staging, { recursive: true })
@@ -243,7 +252,11 @@ function isoWeekKey(iso: string): string {
   const day = (d.getUTCDay() + 6) % 7
   d.setUTCDate(d.getUTCDate() - day + 3)
   const firstThursday = new Date(Date.UTC(d.getUTCFullYear(), 0, 4))
-  const week = 1 + Math.round(((d.getTime() - firstThursday.getTime()) / DAY_MS - 3 + ((firstThursday.getUTCDay() + 6) % 7)) / 7)
+  const week =
+    1 +
+    Math.round(
+      ((d.getTime() - firstThursday.getTime()) / DAY_MS - 3 + ((firstThursday.getUTCDay() + 6) % 7)) / 7
+    )
   return `${d.getUTCFullYear()}-W${week}`
 }
 
@@ -319,12 +332,16 @@ async function verifyIntoStaging(ctx: AppContext, zipPath: string): Promise<Stag
     return result
   }
   result.manifest = manifest
-  if (manifest.format !== 'cam-backup') result.problems.push('Este arquivo não é um backup do Career Application Manager.')
+  if (manifest.format !== 'cam-backup')
+    result.problems.push('Este arquivo não é um backup do Career Application Manager.')
   if (!MIGRATIONS.some((m) => m.name === manifest.schemaVersion))
-    result.problems.push(`Backup feito por uma versão mais nova do app (esquema ${manifest.schemaVersion}). Atualize o app antes de restaurar.`)
+    result.problems.push(
+      `Backup feito por uma versão mais nova do app (esquema ${manifest.schemaVersion}). Atualize o app antes de restaurar.`
+    )
 
   const listed = new Set(manifest.files.map((f) => f.path))
-  for (const n of names) if (n !== 'manifest.json' && !listed.has(n)) result.problems.push(`Arquivo fora do manifesto: ${n}`)
+  for (const n of names)
+    if (n !== 'manifest.json' && !listed.has(n)) result.problems.push(`Arquivo fora do manifesto: ${n}`)
   for (const f of manifest.files) {
     const p = join(stagingDir, ...f.path.split('/'))
     if (!existsSync(p)) result.problems.push(`Arquivo ausente: ${f.path}`)
@@ -338,10 +355,12 @@ async function verifyIntoStaging(ctx: AppContext, zipPath: string): Promise<Stag
     result.integrityCheck = String(db.pragma('integrity_check', { simple: true }))
     if (result.integrityCheck !== 'ok') result.problems.push(`integrity_check: ${result.integrityCheck}`)
     result.foreignKeyViolations = (db.pragma('foreign_key_check') as unknown[]).length
-    if (result.foreignKeyViolations > 0) result.problems.push(`${result.foreignKeyViolations} violações de chave estrangeira`)
+    if (result.foreignKeyViolations > 0)
+      result.problems.push(`${result.foreignKeyViolations} violações de chave estrangeira`)
     const before = countRows(db)
     for (const [table, n] of Object.entries(manifest.counts)) {
-      if (before[table] !== n) result.problems.push(`Contagem diferente em ${table}: manifesto ${n}, banco ${before[table] ?? 0}`)
+      if (before[table] !== n)
+        result.problems.push(`Contagem diferente em ${table}: manifesto ${n}, banco ${before[table] ?? 0}`)
     }
     if (result.problems.length === 0) {
       result.migrationsApplied = runMigrations(db, ctx.now)
@@ -373,7 +392,12 @@ export async function restoreBackup(ctx: AppContext, zipPath: string): Promise<B
   const staged = await verifyIntoStaging(ctx, zipPath)
   const { stagingDir, ...report } = staged
   try {
-    if (!report.ok) throw new AppError('INTEGRITY', 'O backup não passou na verificação. Nada foi alterado.', report.problems)
+    if (!report.ok)
+      throw new AppError(
+        'INTEGRITY',
+        'O backup não passou na verificação. Nada foi alterado.',
+        report.problems
+      )
     await createBackup(ctx, 'pre-restore')
 
     const old = join(ctx.paths.tmp, `replaced-${newId()}`)

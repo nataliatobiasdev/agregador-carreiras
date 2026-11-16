@@ -6,10 +6,11 @@
  */
 import type { Sqlite } from './connection'
 
-const files = import.meta.glob('./migrations/*.sql', { query: '?raw', import: 'default', eager: true }) as Record<
-  string,
-  string
->
+const files = import.meta.glob('./migrations/*.sql', {
+  query: '?raw',
+  import: 'default',
+  eager: true
+}) as Record<string, string>
 
 export interface Migration {
   name: string
@@ -34,7 +35,9 @@ function ensureMigrationsTable(db: Sqlite): void {
 
 export function appliedMigrations(db: Sqlite): string[] {
   ensureMigrationsTable(db)
-  return (db.prepare('SELECT name FROM _migrations ORDER BY name').all() as { name: string }[]).map((r) => r.name)
+  return (db.prepare('SELECT name FROM _migrations ORDER BY name').all() as { name: string }[]).map(
+    (r) => r.name
+  )
 }
 
 export function pendingMigrations(db: Sqlite): Migration[] {

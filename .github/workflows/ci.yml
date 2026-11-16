@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      # postinstall rebuilds better-sqlite3 for Electron's ABI
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint
+      - run: pnpm typecheck
+      - run: pnpm test:coverage
+      - run: pnpm build
+      - name: End-to-end tests (Playwright + Electron)
+        run: pnpm exec playwright test --trace off
+      - name: Build Windows installer (NSIS, per-user)
+        run: pnpm exec electron-builder --win --x64 --publish never
+      - uses: actions/upload-artifact@v4
+        with:
+          name: installer
+          path: dist/*.exe
+          if-no-files-found: error

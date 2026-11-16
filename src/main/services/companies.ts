@@ -99,7 +99,9 @@ export function updateCompany(ctx: AppContext, id: string, patch: Partial<Compan
     writeAudit(ctx, 'company', id, 'update', changes)
     reindexCompany(ctx, id)
     // Application titles in the index include the company name.
-    const apps = ctx.sqlite.prepare('SELECT id FROM applications WHERE company_id = ?').all(id) as { id: string }[]
+    const apps = ctx.sqlite.prepare('SELECT id FROM applications WHERE company_id = ?').all(id) as {
+      id: string
+    }[]
     if (changes.name) for (const a of apps) reindexApplication(ctx, a.id)
     return getCompany(ctx, id)
   })
@@ -117,7 +119,11 @@ export function deleteCompany(ctx: AppContext, id: string): void {
         'CONFLICT',
         `A empresa tem ${live.n} candidatura(s). Exclua ou mova as candidaturas antes de excluir a empresa.`
       )
-    ctx.orm.update(companies).set({ deletedAt: nowIso(ctx), updatedAt: nowIso(ctx) }).where(eq(companies.id, id)).run()
+    ctx.orm
+      .update(companies)
+      .set({ deletedAt: nowIso(ctx), updatedAt: nowIso(ctx) })
+      .where(eq(companies.id, id))
+      .run()
     writeAudit(ctx, 'company', id, 'delete')
     reindexCompany(ctx, id)
   })
@@ -129,8 +135,15 @@ export function restoreCompany(ctx: AppContext, id: string): void {
     if (!row || !row.deletedAt) throw new AppError('NOT_FOUND', 'Empresa não está na Lixeira')
     const clash = findLiveByName(ctx, row.name)
     if (clash)
-      throw new AppError('CONFLICT', `Já existe outra empresa chamada "${row.name}". Renomeie-a antes de restaurar.`)
-    ctx.orm.update(companies).set({ deletedAt: null, updatedAt: nowIso(ctx) }).where(eq(companies.id, id)).run()
+      throw new AppError(
+        'CONFLICT',
+        `Já existe outra empresa chamada "${row.name}". Renomeie-a antes de restaurar.`
+      )
+    ctx.orm
+      .update(companies)
+      .set({ deletedAt: null, updatedAt: nowIso(ctx) })
+      .where(eq(companies.id, id))
+      .run()
     writeAudit(ctx, 'company', id, 'restore')
     reindexCompany(ctx, id)
   })
@@ -171,7 +184,11 @@ export function suggestCompanies(ctx: AppContext, text: string): Array<{ id: str
     .all()
   return rows
     .filter((r) => r.nameKey.includes(key))
-    .sort((a, b) => Number(!a.nameKey.startsWith(key)) - Number(!b.nameKey.startsWith(key)) || a.nameKey.localeCompare(b.nameKey))
+    .sort(
+      (a, b) =>
+        Number(!a.nameKey.startsWith(key)) - Number(!b.nameKey.startsWith(key)) ||
+        a.nameKey.localeCompare(b.nameKey)
+    )
     .slice(0, 10)
     .map(({ id, name }) => ({ id, name }))
 }

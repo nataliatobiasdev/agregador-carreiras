@@ -227,7 +227,9 @@ export const stageInputSchema = z.object({
 // ---------------------------------------------------------------------------
 
 type Channel<I extends z.ZodTypeAny, O> = { input: I; output: O }
-const ch = <O>() => <I extends z.ZodTypeAny>(input: I): Channel<I, O> => ({ input, output: undefined as O })
+const ch =
+  <O>() =>
+  <I extends z.ZodTypeAny>(input: I): Channel<I, O> => ({ input, output: undefined as O })
 
 const none = z.undefined()
 const byId = z.object({ id })
@@ -243,6 +245,7 @@ export const contracts = {
   'applications.create': ch<{ id: string }>()(createApplicationSchema),
   'applications.update': ch<D.ApplicationDetail>()(updateApplicationSchema),
   'applications.duplicate': ch<{ id: string }>()(byId),
+  'applications.reapply': ch<{ id: string }>()(byId),
   'applications.archive': ch<void>()(byId),
   'applications.unarchive': ch<void>()(byId),
   'applications.delete': ch<void>()(byId),
@@ -276,7 +279,9 @@ export const contracts = {
   'lists.items': ch<D.ListItemDto[]>()(
     z.object({ listKey: z.enum(LIST_KEYS), includeInactive: z.boolean().optional() })
   ),
-  'lists.add': ch<D.ListItemDto>()(z.object({ listKey: z.enum(LIST_KEYS), label: z.string().trim().min(1).max(100) })),
+  'lists.add': ch<D.ListItemDto>()(
+    z.object({ listKey: z.enum(LIST_KEYS), label: z.string().trim().min(1).max(100) })
+  ),
   'lists.update': ch<void>()(
     z.object({ id, label: z.string().trim().min(1).max(100).optional(), active: z.boolean().optional() })
   ),
@@ -322,7 +327,9 @@ export const contracts = {
   'attachments.open': ch<void>()(byId),
   'attachments.verifyIntegrity': ch<D.IntegrityReport>()(none),
 
-  'search.query': ch<D.SearchResult[]>()(z.object({ text: z.string().max(200), limit: z.number().int().max(100).optional() })),
+  'search.query': ch<D.SearchResult[]>()(
+    z.object({ text: z.string().max(200), limit: z.number().int().max(100).optional() })
+  ),
 
   'trash.list': ch<D.TrashItem[]>()(none),
   'trash.restore': ch<void>()(trashRefSchema),
@@ -352,16 +359,11 @@ export const CHANNEL_NAMES = Object.keys(contracts) as ChannelName[]
 type Split<S extends string> = S extends `${infer D}.${infer A}` ? [D, A] : never
 type Domains = Split<ChannelName>[0]
 
-/** Typed API exposed by the preload script as window.cam. */
+/** Typed API assembled in the renderer: cam.<domain>.<action>(input). */
 export type CamApi = {
   [Dm in Domains]: {
     [C in ChannelName as Split<C>[0] extends Dm ? Split<C>[1] : never]: undefined extends ChannelInput<C>
       ? (input?: ChannelInput<C>) => Promise<Result<ChannelOutput<C>>>
       : (input: ChannelInput<C>) => Promise<Result<ChannelOutput<C>>>
   }
-} & {
-  /** Absolute path of a dropped File (Electron webUtils), used for attachments. */
-  pathForFile(file: File): string
-  /** Subscribes to main-process notifications (e.g. "data-restored"). */
-  on(event: 'data-changed', listener: () => void): () => void
 }

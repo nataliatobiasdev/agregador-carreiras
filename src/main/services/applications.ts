@@ -1,7 +1,11 @@
 import { and, desc, eq, inArray, isNotNull } from 'drizzle-orm'
 import type { ApplicationDetail, ApplicationListItem, AuditEntryDto } from '../../shared/dto'
 import type { ContactRole } from '../../shared/enums'
-import type { ApplicationFilter, CreateApplicationInput, UpdateApplicationInput } from '../../shared/contracts'
+import type {
+  ApplicationFilter,
+  CreateApplicationInput,
+  UpdateApplicationInput
+} from '../../shared/contracts'
 import { AppError } from '../../shared/errors'
 import { type AppContext, nowIso } from '../context'
 import { applicationContacts, applications, events, notes, tags, taggings } from '../db/schema'
@@ -72,7 +76,8 @@ function normalizeFields(input: Fields): Partial<ApplicationRow> {
     out[key] = typeof value === 'string' ? blankToNull(value) : value
   }
   if (input.appliedAt !== undefined) out.appliedAt = new Date(input.appliedAt).toISOString()
-  if (typeof out.responseDeadline === 'string') out.responseDeadline = new Date(out.responseDeadline).toISOString()
+  if (typeof out.responseDeadline === 'string')
+    out.responseDeadline = new Date(out.responseDeadline).toISOString()
   if (typeof out.jobUrl === 'string' && !isHttpUrl(out.jobUrl))
     throw new AppError('VALIDATION', 'URL da vaga deve começar com http:// ou https://')
   return out as Partial<ApplicationRow>
@@ -106,8 +111,16 @@ function setSkills(ctx: AppContext, applicationId: string, skills: string[]): vo
       .all()
       .find((t) => nameKey((t as { name: string }).name) === nameKey(name)) as { id: string } | undefined
     const tagId = existing?.id ?? newId()
-    if (!existing) ctx.orm.insert(tags).values({ id: tagId, name, kind: 'skill', createdAt: nowIso(ctx) }).run()
-    ctx.orm.insert(taggings).values({ tagId, entityType: 'application', entityId: applicationId }).onConflictDoNothing().run()
+    if (!existing)
+      ctx.orm
+        .insert(tags)
+        .values({ id: tagId, name, kind: 'skill', createdAt: nowIso(ctx) })
+        .run()
+    ctx.orm
+      .insert(taggings)
+      .values({ tagId, entityType: 'application', entityId: applicationId })
+      .onConflictDoNothing()
+      .run()
   }
   // Orphan tags are removed by the service, as the spec requires.
   ctx.sqlite.exec(`DELETE FROM tags WHERE id NOT IN (SELECT tag_id FROM taggings)`)
@@ -191,7 +204,8 @@ export function updateApplication(ctx: AppContext, input: UpdateApplicationInput
     const next = normalizeFields(input.patch)
     if (input.patch.company) next.companyId = findOrCreateCompany(ctx, input.patch.company)
     if (next.title !== undefined && !next.title) throw new AppError('VALIDATION', 'Informe o cargo')
-    if (next.platform !== undefined && !next.platform) throw new AppError('VALIDATION', 'Informe a plataforma')
+    if (next.platform !== undefined && !next.platform)
+      throw new AppError('VALIDATION', 'Informe a plataforma')
     validateMerged({ ...before, ...next })
 
     const changes = diffFields(before, next)
@@ -211,7 +225,10 @@ export function updateApplication(ctx: AppContext, input: UpdateApplicationInput
         )
         .get(input.id, next.appliedAt) as { n: number }
       if (earlier.n > 0)
-        throw new AppError('VALIDATION', 'Há eventos registrados antes da nova data da candidatura. Corrija-os primeiro.')
+        throw new AppError(
+          'VALIDATION',
+          'Há eventos registrados antes da nova data da candidatura. Corrija-os primeiro.'
+        )
       if (Date.parse(next.appliedAt) > ctx.now().getTime() + 5 * 60_000)
         throw new AppError('VALIDATION', 'A data da candidatura não pode estar no futuro.')
       ctx.orm
@@ -256,12 +273,10 @@ export function getApplication(ctx: AppContext, id: string): ApplicationDetail {
         WHERE company_id = ? AND id <> ? AND deleted_at IS NULL ORDER BY applied_at DESC LIMIT 20`
     )
     .all(base.companyId, id) as ApplicationDetail['otherApplicationsAtCompany']
-  const missingFields = COMPLETENESS_FIELDS.filter((f) => base[f] === null || base[f] === undefined || base[f] === '')
-  const {
-    resumeVersionId: _r,
-    coverLetterVersionId: _c,
-    ...rest
-  } = base
+  const missingFields = COMPLETENESS_FIELDS.filter(
+    (f) => base[f] === null || base[f] === undefined || base[f] === ''
+  )
+  const { resumeVersionId: _r, coverLetterVersionId: _c, ...rest } = base
   return {
     ...rest,
     status: base.status as ApplicationDetail['status'],
@@ -309,7 +324,16 @@ export function listApplications(ctx: AppContext, filter: ApplicationFilter = {}
   return rows.filter((r) => nameKey(`${r.title} ${r.companyName}`).includes(key))
 }
 
-export function duplicateApplication(ctx: AppContext, id: string): { id: string } {
+/**
+ * Duplicate: copies the opportunity fields to a new application (same company,
+ * another job) without timeline, tasks or attachments.
+ * Reapply: a new application to the same job, linked by previous_application_id.
+ */
+export function duplicateApplication(
+  ctx: AppContext,
+  id: string,
+  options: { reapply?: boolean } = {}
+): { id: string } {
   return tx(ctx, () => {
     const src = getLiveRow(ctx, id)
     const at = nowIso(ctx)
@@ -317,8 +341,8 @@ export function duplicateApplication(ctx: AppContext, id: string): { id: string 
       ...src,
       id: newId(),
       appliedAt: at,
-      duplicatedFromId: src.id,
-      previousApplicationId: null,
+      duplicatedFromId: options.reapply ? null : src.id,
+      previousApplicationId: options.reapply ? src.id : null,
       externalRef: null,
       responseDeadline: null,
       status: 'active',
@@ -336,7 +360,13 @@ export function duplicateApplication(ctx: AppContext, id: string): { id: string 
     ctx.orm.insert(applications).values(copy).run()
     insertEvent(ctx, { applicationId: copy.id!, type: 'applied', occurredAt: at })
     setSkills(ctx, copy.id!, skillsOf(ctx, src.id))
-    writeAudit(ctx, 'application', copy.id!, 'create', { duplicatedFromId: [null, src.id] })
+    writeAudit(
+      ctx,
+      'application',
+      copy.id!,
+      'create',
+      options.reapply ? { previousApplicationId: [null, src.id] } : { duplicatedFromId: [null, src.id] }
+    )
     reindexApplication(ctx, copy.id!)
     return { id: copy.id! }
   })
@@ -370,11 +400,18 @@ export function restoreApplication(ctx: AppContext, id: string): void {
   tx(ctx, () => {
     const row = getRow(ctx, id)
     if (!row.deletedAt) throw new AppError('NOT_FOUND', 'Candidatura não está na Lixeira')
-    const company = ctx.sqlite.prepare('SELECT deleted_at FROM companies WHERE id = ?').get(row.companyId) as {
+    const company = ctx.sqlite
+      .prepare('SELECT deleted_at FROM companies WHERE id = ?')
+      .get(row.companyId) as {
       deleted_at: string | null
     }
-    if (company.deleted_at) throw new AppError('CONFLICT', 'Restaure a empresa desta candidatura primeiro (Lixeira).')
-    ctx.orm.update(applications).set({ deletedAt: null, updatedAt: nowIso(ctx) }).where(eq(applications.id, id)).run()
+    if (company.deleted_at)
+      throw new AppError('CONFLICT', 'Restaure a empresa desta candidatura primeiro (Lixeira).')
+    ctx.orm
+      .update(applications)
+      .set({ deletedAt: null, updatedAt: nowIso(ctx) })
+      .where(eq(applications.id, id))
+      .run()
     writeAudit(ctx, 'application', id, 'restore')
     reindexApplication(ctx, id)
   })
@@ -504,7 +541,12 @@ export function addApplicationContact(
   })
 }
 
-export function removeApplicationContact(ctx: AppContext, applicationId: string, contactId: string, role: ContactRole): void {
+export function removeApplicationContact(
+  ctx: AppContext,
+  applicationId: string,
+  contactId: string,
+  role: ContactRole
+): void {
   tx(ctx, () => {
     const res = ctx.orm
       .delete(applicationContacts)

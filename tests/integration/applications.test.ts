@@ -85,9 +85,15 @@ describe('applications', () => {
     expect(() => createApplication(ctx, { ...base, expectedSalary: 10 })).toThrow(/moeda/)
     // Direct SQL bypassing the service still hits the database constraints.
     const { id } = createApplication(ctx, base)
-    expect(() => ctx.sqlite.prepare('UPDATE applications SET fit_score = 9 WHERE id = ?').run(id)).toThrow(/CHECK/)
-    expect(() => ctx.sqlite.prepare(`UPDATE applications SET status = 'closed' WHERE id = ?`).run(id)).toThrow(/CHECK/)
-    expect(() => ctx.sqlite.prepare(`UPDATE applications SET company_id = 'nope' WHERE id = ?`).run(id)).toThrow(/FOREIGN KEY/)
+    expect(() => ctx.sqlite.prepare('UPDATE applications SET fit_score = 9 WHERE id = ?').run(id)).toThrow(
+      /CHECK/
+    )
+    expect(() =>
+      ctx.sqlite.prepare(`UPDATE applications SET status = 'closed' WHERE id = ?`).run(id)
+    ).toThrow(/CHECK/)
+    expect(() =>
+      ctx.sqlite.prepare(`UPDATE applications SET company_id = 'nope' WHERE id = ?`).run(id)
+    ).toThrow(/FOREIGN KEY/)
   })
 
   it('rejects a future application date', () => {
@@ -119,17 +125,35 @@ describe('applications', () => {
     const { id } = createApplication(ctx, { ...base, appliedAt: '2026-11-01T10:00:00.000Z' })
     updateApplication(ctx, { id, patch: { appliedAt: '2026-11-02T10:00:00.000Z' } })
     expect(listEvents(ctx, id)[0]?.occurredAt).toBe('2026-11-02T10:00:00.000Z')
-    recordEvent(ctx, { applicationId: id, type: 'interaction', direction: 'in', occurredAt: '2026-11-05T10:00:00.000Z' })
-    expect(() => updateApplication(ctx, { id, patch: { appliedAt: '2026-11-06T10:00:00.000Z' } })).toThrow(/antes/)
+    recordEvent(ctx, {
+      applicationId: id,
+      type: 'interaction',
+      direction: 'in',
+      occurredAt: '2026-11-05T10:00:00.000Z'
+    })
+    expect(() => updateApplication(ctx, { id, patch: { appliedAt: '2026-11-06T10:00:00.000Z' } })).toThrow(
+      /antes/
+    )
   })
 
   it('duplicates the opportunity fields without timeline, and links the source', () => {
     const ctx = makeContext()
     const { id } = createApplication(ctx, { ...base, seniority: 'senior', skills: ['Go'] })
-    recordEvent(ctx, { applicationId: id, type: 'interaction', direction: 'in', occurredAt: '2026-11-16T11:30:00.000Z' })
+    recordEvent(ctx, {
+      applicationId: id,
+      type: 'interaction',
+      direction: 'in',
+      occurredAt: '2026-11-16T11:30:00.000Z'
+    })
     const copy = duplicateApplication(ctx, id)
     const app = getApplication(ctx, copy.id)
-    expect(app).toMatchObject({ duplicatedFromId: id, seniority: 'senior', status: 'active', lastInboundAt: null, skills: ['Go'] })
+    expect(app).toMatchObject({
+      duplicatedFromId: id,
+      seniority: 'senior',
+      status: 'active',
+      lastInboundAt: null,
+      skills: ['Go']
+    })
     expect(listEvents(ctx, copy.id)).toHaveLength(1)
     expect(app.otherApplicationsAtCompany.map((o) => o.id)).toEqual([id])
   })
@@ -137,7 +161,12 @@ describe('applications', () => {
   it('archive hides from the default list; delete moves to trash and restore brings everything back', () => {
     const ctx = makeContext()
     const { id } = createApplication(ctx, base)
-    recordEvent(ctx, { applicationId: id, type: 'interaction', direction: 'in', occurredAt: '2026-11-16T11:30:00.000Z' })
+    recordEvent(ctx, {
+      applicationId: id,
+      type: 'interaction',
+      direction: 'in',
+      occurredAt: '2026-11-16T11:30:00.000Z'
+    })
     setArchived(ctx, id, true)
     expect(listApplications(ctx)).toHaveLength(0)
     expect(listApplications(ctx, { includeArchived: true })).toHaveLength(1)
@@ -161,8 +190,18 @@ describe('applications', () => {
   it('filters by status, company, period and text', () => {
     const ctx = makeContext()
     const a = createApplication(ctx, { ...base, appliedAt: '2026-11-01T10:00:00.000Z' })
-    createApplication(ctx, { ...base, company: { name: 'Stone' }, title: 'Tech Lead', appliedAt: '2026-11-10T10:00:00.000Z' })
-    recordEvent(ctx, { applicationId: a.id, type: 'closed', outcome: 'rejected', occurredAt: '2026-11-12T10:00:00.000Z' })
+    createApplication(ctx, {
+      ...base,
+      company: { name: 'Stone' },
+      title: 'Tech Lead',
+      appliedAt: '2026-11-10T10:00:00.000Z'
+    })
+    recordEvent(ctx, {
+      applicationId: a.id,
+      type: 'closed',
+      outcome: 'rejected',
+      occurredAt: '2026-11-12T10:00:00.000Z'
+    })
     expect(listApplications(ctx, { statuses: ['closed'] }).map((r) => r.id)).toEqual([a.id])
     expect(listApplications(ctx, { text: 'stone' })).toHaveLength(1)
     expect(listApplications(ctx, { appliedFrom: '2026-11-05T00:00:00.000Z' })).toHaveLength(1)

@@ -30,9 +30,17 @@ function seed(ctx: ReturnType<typeof makeContext>) {
     platform: 'gupy',
     jobDescription: 'Pipelines em Spark'
   })
-  recordEvent(ctx, { applicationId: id, type: 'stage_changed', stageId: 'stage-hr-interview', occurredAt: '2026-11-12T10:00:00.000Z' })
+  recordEvent(ctx, {
+    applicationId: id,
+    type: 'stage_changed',
+    stageId: 'stage-hr-interview',
+    occurredAt: '2026-11-12T10:00:00.000Z'
+  })
   createNote(ctx, { kind: 'free', title: 'Anotação', bodyMd: 'conteúdo', owner: { applicationId: id } })
-  const att = addAttachment(ctx, { applicationId: id, source: { bytes: new TextEncoder().encode('pdf bytes'), name: 'vaga.pdf' } })
+  const att = addAttachment(ctx, {
+    applicationId: id,
+    source: { bytes: new TextEncoder().encode('pdf bytes'), name: 'vaga.pdf' }
+  })
   return { id, att }
 }
 
@@ -75,7 +83,12 @@ describe('backup and restore', () => {
     expect(report.problems.length).toBeGreaterThan(0)
 
     const target = makeContext()
-    createApplication(target, { company: { name: 'Antes' }, title: 'Mantida', appliedAt: '2026-11-01T10:00:00.000Z', platform: 'email' })
+    createApplication(target, {
+      company: { name: 'Antes' },
+      title: 'Mantida',
+      appliedAt: '2026-11-01T10:00:00.000Z',
+      platform: 'email'
+    })
     const before = countRows(target.sqlite)
     await expect(restoreBackup(target, badPath)).rejects.toThrow(/verificação/)
     expect(countRows(target.sqlite)).toEqual(before)

@@ -124,7 +124,14 @@ export const INTERVIEW_STATUSES = ['scheduled', 'done', 'cancelled', 'reschedule
 export const INTERVIEW_RESULTS = ['advanced', 'rejected', 'pending'] as const
 export const ASSESSMENT_KINDS = ['take_home', 'platform', 'live'] as const
 export const ASSESSMENT_STATUSES = ['received', 'in_progress', 'submitted', 'expired', 'declined'] as const
-export const OFFER_STATUSES = ['received', 'negotiating', 'accepted', 'declined', 'expired', 'withdrawn'] as const
+export const OFFER_STATUSES = [
+  'received',
+  'negotiating',
+  'accepted',
+  'declined',
+  'expired',
+  'withdrawn'
+] as const
 export const TASK_KINDS = [
   'follow_up_application',
   'follow_up_interview',
@@ -140,10 +147,26 @@ export const DOCUMENT_KINDS = ['resume', 'cover_letter', 'portfolio', 'other'] a
 export const TAG_KINDS = ['skill', 'general'] as const
 export const GOAL_METRICS = ['applications', 'follow_ups', 'interviews'] as const
 export const GOAL_PERIODS = ['week', 'month'] as const
-export const AUDIT_ACTIONS = ['create', 'update', 'delete', 'restore', 'void', 'archive', 'unarchive'] as const
+export const AUDIT_ACTIONS = [
+  'create',
+  'update',
+  'delete',
+  'restore',
+  'void',
+  'archive',
+  'unarchive'
+] as const
 export type AuditAction = (typeof AUDIT_ACTIONS)[number]
 
-export const ENTITY_TYPES = ['application', 'company', 'contact', 'note', 'attachment', 'event', 'stage'] as const
+export const ENTITY_TYPES = [
+  'application',
+  'company',
+  'contact',
+  'note',
+  'attachment',
+  'event',
+  'stage'
+] as const
 export type EntityType = (typeof ENTITY_TYPES)[number]
 
 /** Editable lists (platforms, areas, close reasons) live in the list_items table. */

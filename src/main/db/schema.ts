@@ -74,7 +74,9 @@ export const companies = sqliteTable(
     updatedAt: updatedAt()
   },
   (t) => [
-    uniqueIndex('companies_name_key_live_uq').on(t.nameKey).where(sql`deleted_at IS NULL`),
+    uniqueIndex('companies_name_key_live_uq')
+      .on(t.nameKey)
+      .where(sql`deleted_at IS NULL`),
     check('companies_name_not_blank', sql`length(trim(${t.name})) > 0`)
   ]
 )
@@ -209,9 +211,12 @@ export const applications = sqliteTable(
     }),
     coverLetterText: text('cover_letter_text'),
     responseDeadline: text('response_deadline'),
-    previousApplicationId: text('previous_application_id').references((): AnySQLiteColumn => applications.id, {
-      onDelete: 'set null'
-    }),
+    previousApplicationId: text('previous_application_id').references(
+      (): AnySQLiteColumn => applications.id,
+      {
+        onDelete: 'set null'
+      }
+    ),
     duplicatedFromId: text('duplicated_from_id').references((): AnySQLiteColumn => applications.id, {
       onDelete: 'set null'
     }),

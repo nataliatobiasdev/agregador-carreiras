@@ -57,11 +57,22 @@ export function restoreFromTrash(ctx: AppContext, entityType: TrashType, id: str
 
 function purgeCompany(ctx: AppContext, id: string): void {
   tx(ctx, () => {
-    const row = ctx.sqlite.prepare('SELECT deleted_at FROM companies WHERE id = ?').get(id) as { deleted_at: string | null } | undefined
-    if (!row?.deleted_at) throw new AppError('CONFLICT', 'Só é possível excluir em definitivo itens da Lixeira')
-    const apps = ctx.sqlite.prepare('SELECT count(*) AS n FROM applications WHERE company_id = ?').get(id) as { n: number }
-    if (apps.n > 0) throw new AppError('CONFLICT', 'Ainda há candidaturas desta empresa (inclusive na Lixeira). Exclua-as em definitivo primeiro.')
-    const liveNotes = ctx.sqlite.prepare('SELECT count(*) AS n FROM notes WHERE company_id = ? AND deleted_at IS NULL').get(id) as { n: number }
+    const row = ctx.sqlite.prepare('SELECT deleted_at FROM companies WHERE id = ?').get(id) as
+      | { deleted_at: string | null }
+      | undefined
+    if (!row?.deleted_at)
+      throw new AppError('CONFLICT', 'Só é possível excluir em definitivo itens da Lixeira')
+    const apps = ctx.sqlite
+      .prepare('SELECT count(*) AS n FROM applications WHERE company_id = ?')
+      .get(id) as { n: number }
+    if (apps.n > 0)
+      throw new AppError(
+        'CONFLICT',
+        'Ainda há candidaturas desta empresa (inclusive na Lixeira). Exclua-as em definitivo primeiro.'
+      )
+    const liveNotes = ctx.sqlite
+      .prepare('SELECT count(*) AS n FROM notes WHERE company_id = ? AND deleted_at IS NULL')
+      .get(id) as { n: number }
     if (liveNotes.n > 0) throw new AppError('CONFLICT', 'A empresa ainda tem notas. Exclua-as primeiro.')
     ctx.sqlite.prepare('DELETE FROM notes WHERE company_id = ?').run(id)
     ctx.sqlite.prepare('DELETE FROM companies WHERE id = ?').run(id)
@@ -72,9 +83,14 @@ function purgeCompany(ctx: AppContext, id: string): void {
 
 function purgeContact(ctx: AppContext, id: string): void {
   tx(ctx, () => {
-    const row = ctx.sqlite.prepare('SELECT deleted_at FROM contacts WHERE id = ?').get(id) as { deleted_at: string | null } | undefined
-    if (!row?.deleted_at) throw new AppError('CONFLICT', 'Só é possível excluir em definitivo itens da Lixeira')
-    const liveNotes = ctx.sqlite.prepare('SELECT count(*) AS n FROM notes WHERE contact_id = ? AND deleted_at IS NULL').get(id) as { n: number }
+    const row = ctx.sqlite.prepare('SELECT deleted_at FROM contacts WHERE id = ?').get(id) as
+      | { deleted_at: string | null }
+      | undefined
+    if (!row?.deleted_at)
+      throw new AppError('CONFLICT', 'Só é possível excluir em definitivo itens da Lixeira')
+    const liveNotes = ctx.sqlite
+      .prepare('SELECT count(*) AS n FROM notes WHERE contact_id = ? AND deleted_at IS NULL')
+      .get(id) as { n: number }
     if (liveNotes.n > 0) throw new AppError('CONFLICT', 'O contato ainda tem notas. Exclua-as primeiro.')
     ctx.sqlite.prepare('DELETE FROM notes WHERE contact_id = ?').run(id)
     ctx.sqlite.prepare('DELETE FROM contacts WHERE id = ?').run(id)

@@ -1,11 +1,6 @@
 /** Key used to compare names ignoring accents, case and repeated spaces. */
 export function nameKey(name: string): string {
-  return name
-    .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
-    .toLowerCase()
-    .replace(/\s+/g, ' ')
-    .trim()
+  return name.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/\s+/g, ' ').trim()
 }
 
 /** Trims a string and turns blank values into null. */

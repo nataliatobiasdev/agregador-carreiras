@@ -34,7 +34,10 @@ export function tempDir(prefix = 'cam-test-'): string {
   return dir
 }
 
-export function makeContext(clock: TestClock = testClock(), dataDir = tempDir()): AppContext & { clock: TestClock } {
+export function makeContext(
+  clock: TestClock = testClock(),
+  dataDir = tempDir()
+): AppContext & { clock: TestClock } {
   const ctx = createContext({ dataDir, now: clock.now, appVersion: '1.0.0-test' })
   cleanups.unshift(() => {
     try {

@@ -8,7 +8,13 @@ import type { AppContext } from '../context'
 
 type IndexedType = SearchResult['entityType']
 
-export function indexEntity(ctx: AppContext, entityType: IndexedType, entityId: string, title: string, body: string): void {
+export function indexEntity(
+  ctx: AppContext,
+  entityType: IndexedType,
+  entityId: string,
+  title: string,
+  body: string
+): void {
   removeFromIndex(ctx, entityType, entityId)
   ctx.sqlite
     .prepare('INSERT INTO search_index (entity_type, entity_id, title, body) VALUES (?, ?, ?, ?)')
@@ -16,7 +22,9 @@ export function indexEntity(ctx: AppContext, entityType: IndexedType, entityId: 
 }
 
 export function removeFromIndex(ctx: AppContext, entityType: IndexedType, entityId: string): void {
-  ctx.sqlite.prepare('DELETE FROM search_index WHERE entity_type = ? AND entity_id = ?').run(entityType, entityId)
+  ctx.sqlite
+    .prepare('DELETE FROM search_index WHERE entity_type = ? AND entity_id = ?')
+    .run(entityType, entityId)
 }
 
 const join = (...parts: Array<string | null | undefined>): string => parts.filter(Boolean).join('\n')
@@ -37,7 +45,15 @@ export function reindexApplication(ctx: AppContext, applicationId: string): void
     'application',
     applicationId,
     `${row.title} — ${row.company}`,
-    join(row.job_description, row.requirements_required, row.requirements_desired, row.external_ref, row.city, row.country, row.skills)
+    join(
+      row.job_description,
+      row.requirements_required,
+      row.requirements_desired,
+      row.external_ref,
+      row.city,
+      row.country,
+      row.skills
+    )
   )
 }
 
@@ -46,7 +62,13 @@ export function reindexCompany(ctx: AppContext, companyId: string): void {
     .prepare('SELECT name, industry, country, website, notes, deleted_at FROM companies WHERE id = ?')
     .get(companyId) as Record<string, string | null> | undefined
   if (!row || row.deleted_at) return removeFromIndex(ctx, 'company', companyId)
-  indexEntity(ctx, 'company', companyId, row.name ?? '', join(row.industry, row.country, row.website, row.notes))
+  indexEntity(
+    ctx,
+    'company',
+    companyId,
+    row.name ?? '',
+    join(row.industry, row.country, row.website, row.notes)
+  )
 }
 
 export function reindexContact(ctx: AppContext, contactId: string): void {
@@ -57,7 +79,13 @@ export function reindexContact(ctx: AppContext, contactId: string): void {
     )
     .get(contactId) as Record<string, string | null> | undefined
   if (!row || row.deleted_at) return removeFromIndex(ctx, 'contact', contactId)
-  indexEntity(ctx, 'contact', contactId, row.name ?? '', join(row.role_title, row.company, row.email, row.notes))
+  indexEntity(
+    ctx,
+    'contact',
+    contactId,
+    row.name ?? '',
+    join(row.role_title, row.company, row.email, row.notes)
+  )
 }
 
 export function reindexNote(ctx: AppContext, noteId: string): void {

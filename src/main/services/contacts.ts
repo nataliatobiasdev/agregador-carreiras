@@ -83,7 +83,9 @@ export function findOrCreateContact(
   const candidates = ctx.sqlite
     .prepare('SELECT id, name, company_id AS companyId FROM contacts WHERE deleted_at IS NULL')
     .all() as Array<{ id: string; name: string; companyId: string | null }>
-  const match = candidates.find((c) => nameKey(c.name) === key && (c.companyId === companyId || c.companyId === null))
+  const match = candidates.find(
+    (c) => nameKey(c.name) === key && (c.companyId === companyId || c.companyId === null)
+  )
   if (match) return match.id
   return createContact(ctx, { name: ref.name, companyId }).id
 }
@@ -118,7 +120,11 @@ export function deleteContact(ctx: AppContext, id: string): void {
   tx(ctx, () => {
     const row = ctx.orm.select().from(contacts).where(eq(contacts.id, id)).get()
     if (!row || row.deletedAt) throw new AppError('NOT_FOUND', 'Contato não encontrado')
-    ctx.orm.update(contacts).set({ deletedAt: nowIso(ctx), updatedAt: nowIso(ctx) }).where(eq(contacts.id, id)).run()
+    ctx.orm
+      .update(contacts)
+      .set({ deletedAt: nowIso(ctx), updatedAt: nowIso(ctx) })
+      .where(eq(contacts.id, id))
+      .run()
     writeAudit(ctx, 'contact', id, 'delete')
     reindexContact(ctx, id)
   })
@@ -128,13 +134,20 @@ export function restoreContact(ctx: AppContext, id: string): void {
   tx(ctx, () => {
     const row = ctx.orm.select().from(contacts).where(eq(contacts.id, id)).get()
     if (!row || !row.deletedAt) throw new AppError('NOT_FOUND', 'Contato não está na Lixeira')
-    ctx.orm.update(contacts).set({ deletedAt: null, updatedAt: nowIso(ctx) }).where(eq(contacts.id, id)).run()
+    ctx.orm
+      .update(contacts)
+      .set({ deletedAt: null, updatedAt: nowIso(ctx) })
+      .where(eq(contacts.id, id))
+      .run()
     writeAudit(ctx, 'contact', id, 'restore')
     reindexContact(ctx, id)
   })
 }
 
-export function listContacts(ctx: AppContext, filter: { text?: string; companyId?: string } = {}): ContactListItem[] {
+export function listContacts(
+  ctx: AppContext,
+  filter: { text?: string; companyId?: string } = {}
+): ContactListItem[] {
   const rows = ctx.sqlite
     .prepare(
       `SELECT x.*,
@@ -148,14 +161,19 @@ export function listContacts(ctx: AppContext, filter: { text?: string; companyId
     )
     .all(filter.companyId ? { companyId: filter.companyId } : {}) as ContactListItem[]
   const key = filter.text ? nameKey(filter.text) : ''
-  return rows.map(fix).filter((r) => !key || nameKey(`${r.name} ${r.companyName ?? ''} ${r.email ?? ''}`).includes(key))
+  return rows
+    .map(fix)
+    .filter((r) => !key || nameKey(`${r.name} ${r.companyName ?? ''} ${r.email ?? ''}`).includes(key))
 }
 
 export function contactTimeline(ctx: AppContext, id: string): TimelineEventDto[] {
   return listEventsWhere(ctx, 'e.contact_id = ?', [id])
 }
 
-export function contactApplications(ctx: AppContext, id: string): Array<ApplicationListItem & { role: string }> {
+export function contactApplications(
+  ctx: AppContext,
+  id: string
+): Array<ApplicationListItem & { role: string }> {
   return ctx.sqlite
     .prepare(
       `SELECT ${APPLICATION_LIST_COLUMNS}, ac.role AS role

@@ -138,9 +138,9 @@ export function addAttachment(
   input: { applicationId: string; source: FileSource; kind?: AttachmentKind; caption?: string | null }
 ): AttachmentDto {
   return tx(ctx, () => {
-    const app = ctx.sqlite.prepare('SELECT deleted_at FROM applications WHERE id = ?').get(input.applicationId) as
-      | { deleted_at: string | null }
-      | undefined
+    const app = ctx.sqlite
+      .prepare('SELECT deleted_at FROM applications WHERE id = ?')
+      .get(input.applicationId) as { deleted_at: string | null } | undefined
     if (!app || app.deleted_at) throw new AppError('NOT_FOUND', 'Candidatura não encontrada')
     const fileId = storeFile(ctx, input.source)
     const id = newId()
@@ -163,11 +163,17 @@ export function addAttachment(
 
 export function listAttachments(ctx: AppContext, applicationId: string): AttachmentDto[] {
   return ctx.sqlite
-    .prepare(`${ATTACHMENT_SELECT} WHERE a.application_id = ? AND a.deleted_at IS NULL ORDER BY a.created_at DESC`)
+    .prepare(
+      `${ATTACHMENT_SELECT} WHERE a.application_id = ? AND a.deleted_at IS NULL ORDER BY a.created_at DESC`
+    )
     .all(applicationId) as AttachmentDto[]
 }
 
-export function updateAttachment(ctx: AppContext, id: string, patch: { kind?: AttachmentKind; caption?: string | null }): void {
+export function updateAttachment(
+  ctx: AppContext,
+  id: string,
+  patch: { kind?: AttachmentKind; caption?: string | null }
+): void {
   tx(ctx, () => {
     const before = getAttachment(ctx, id)
     const next: Partial<typeof attachments.$inferInsert> = {}
@@ -220,9 +226,14 @@ export function purgeAttachment(ctx: AppContext, id: string): void {
 export function prepareAttachmentForOpening(ctx: AppContext, id: string): string {
   const row = getAttachment(ctx, id)
   const src = storedPath(ctx, row.sha256)
-  if (!existsSync(src)) throw new AppError('FILE_MISSING', 'O arquivo deste anexo não foi encontrado no disco. Restaure um backup.')
+  if (!existsSync(src))
+    throw new AppError(
+      'FILE_MISSING',
+      'O arquivo deste anexo não foi encontrado no disco. Restaure um backup.'
+    )
   const dir = join(ctx.paths.tmp, 'open', id)
   mkdirSync(dir, { recursive: true })
+  // eslint-disable-next-line no-control-regex -- strips characters Windows forbids in file names
   const safeName = row.originalName.replace(/[<>:"/\\|?*\u0000-\u001f]/g, '_')
   const target = join(dir, safeName)
   copyFileSync(src, target)
@@ -247,7 +258,12 @@ export function collectGarbageFiles(ctx: AppContext): number {
 
 export function verifyFileIntegrity(ctx: AppContext): IntegrityReport {
   const rows = ctx.orm.select().from(files).all()
-  const report: IntegrityReport = { checkedFiles: rows.length, missing: [], corrupted: [], orphanFilesOnDisk: [] }
+  const report: IntegrityReport = {
+    checkedFiles: rows.length,
+    missing: [],
+    corrupted: [],
+    orphanFilesOnDisk: []
+  }
   const known = new Set<string>()
   for (const f of rows) {
     known.add(f.sha256)

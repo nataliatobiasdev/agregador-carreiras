@@ -29,16 +29,29 @@ function getStage(ctx: AppContext, id: string): StageDto {
   return s
 }
 
-export function createStage(ctx: AppContext, input: { name: string; category: StageCategory; color?: string | null }): StageDto {
+export function createStage(
+  ctx: AppContext,
+  input: { name: string; category: StageCategory; color?: string | null }
+): StageDto {
   return tx(ctx, () => {
     if (listStages(ctx, true).some((s) => nameKey(s.name) === nameKey(input.name)))
       throw new AppError('CONFLICT', 'Já existe uma etapa com esse nome')
-    const max = ctx.sqlite.prepare('SELECT coalesce(max(sort_hint), 0) AS m FROM stages').get() as { m: number }
+    const max = ctx.sqlite.prepare('SELECT coalesce(max(sort_hint), 0) AS m FROM stages').get() as {
+      m: number
+    }
     const id = newId()
     const at = nowIso(ctx)
     ctx.orm
       .insert(stages)
-      .values({ id, name: input.name.trim(), category: input.category, color: input.color ?? null, sortHint: max.m + 10, createdAt: at, updatedAt: at })
+      .values({
+        id,
+        name: input.name.trim(),
+        category: input.category,
+        color: input.color ?? null,
+        sortHint: max.m + 10,
+        createdAt: at,
+        updatedAt: at
+      })
       .run()
     writeAudit(ctx, 'stage', id, 'create')
     return getStage(ctx, id)
@@ -53,7 +66,10 @@ export function updateStage(
   return tx(ctx, () => {
     const before = getStage(ctx, id)
     if (patch.category && patch.category !== before.category && before.usageCount > 0)
-      throw new AppError('CONFLICT', 'A categoria de uma etapa já usada não pode mudar, porque alteraria as métricas do histórico.')
+      throw new AppError(
+        'CONFLICT',
+        'A categoria de uma etapa já usada não pode mudar, porque alteraria as métricas do histórico.'
+      )
     if (before.isDefaultApplied && patch.category && patch.category !== 'applied')
       throw new AppError('CONFLICT', 'A etapa inicial precisa continuar na categoria "aplicada".')
     const next: Partial<typeof stages.$inferInsert> = {}
@@ -62,7 +78,11 @@ export function updateStage(
     if (patch.color !== undefined) next.color = patch.color
     const changes = diffFields(before as unknown as Record<string, unknown>, next as Record<string, unknown>)
     if (Object.keys(changes).length === 0) return before
-    ctx.orm.update(stages).set({ ...next, updatedAt: nowIso(ctx) }).where(eq(stages.id, id)).run()
+    ctx.orm
+      .update(stages)
+      .set({ ...next, updatedAt: nowIso(ctx) })
+      .where(eq(stages.id, id))
+      .run()
     writeAudit(ctx, 'stage', id, 'update', changes)
     return getStage(ctx, id)
   })
@@ -72,8 +92,13 @@ export function updateStage(
 export function setStageActive(ctx: AppContext, id: string, active: boolean): void {
   tx(ctx, () => {
     const s = getStage(ctx, id)
-    if (s.isDefaultApplied && !active) throw new AppError('CONFLICT', 'A etapa inicial não pode ser desativada.')
-    ctx.orm.update(stages).set({ active, updatedAt: nowIso(ctx) }).where(eq(stages.id, id)).run()
+    if (s.isDefaultApplied && !active)
+      throw new AppError('CONFLICT', 'A etapa inicial não pode ser desativada.')
+    ctx.orm
+      .update(stages)
+      .set({ active, updatedAt: nowIso(ctx) })
+      .where(eq(stages.id, id))
+      .run()
     writeAudit(ctx, 'stage', id, 'update', { active: [s.active, active] })
   })
 }
@@ -99,13 +124,21 @@ export function listItemsOf(ctx: AppContext, listKey: ListKey, includeInactive =
 
 export function addListItem(ctx: AppContext, listKey: ListKey, label: string): ListItemDto {
   return tx(ctx, () => {
-    const value = nameKey(label).replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '') || newId()
-    const existing = listItemsOf(ctx, listKey, true).find((i) => i.value === value || nameKey(i.label) === nameKey(label))
+    const value =
+      nameKey(label)
+        .replace(/[^a-z0-9]+/g, '_')
+        .replace(/^_|_$/g, '') || newId()
+    const existing = listItemsOf(ctx, listKey, true).find(
+      (i) => i.value === value || nameKey(i.label) === nameKey(label)
+    )
     if (existing) {
-      if (!existing.active) ctx.orm.update(listItems).set({ active: true }).where(eq(listItems.id, existing.id)).run()
+      if (!existing.active)
+        ctx.orm.update(listItems).set({ active: true }).where(eq(listItems.id, existing.id)).run()
       return { ...existing, active: true }
     }
-    const max = ctx.sqlite.prepare('SELECT coalesce(max(sort_order), 0) AS m FROM list_items WHERE list_key = ?').get(listKey) as {
+    const max = ctx.sqlite
+      .prepare('SELECT coalesce(max(sort_order), 0) AS m FROM list_items WHERE list_key = ?')
+      .get(listKey) as {
       m: number
     }
     const id = newId()
@@ -117,7 +150,11 @@ export function addListItem(ctx: AppContext, listKey: ListKey, label: string): L
   })
 }
 
-export function updateListItem(ctx: AppContext, id: string, patch: { label?: string; active?: boolean }): void {
+export function updateListItem(
+  ctx: AppContext,
+  id: string,
+  patch: { label?: string; active?: boolean }
+): void {
   const next: Partial<typeof listItems.$inferInsert> = {}
   if (patch.label !== undefined) next.label = patch.label.trim()
   if (patch.active !== undefined) next.active = patch.active

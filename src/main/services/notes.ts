@@ -63,7 +63,11 @@ function saveRevision(ctx: AppContext, noteId: string, title: string, bodyMd: st
     .get()
   if (last && last.title === title && last.bodyMd === bodyMd) return
   if (last && Date.parse(at) - Date.parse(last.savedAt) < REVISION_WINDOW_MS) {
-    ctx.orm.update(noteRevisions).set({ title, bodyMd, savedAt: at }).where(eq(noteRevisions.id, last.id)).run()
+    ctx.orm
+      .update(noteRevisions)
+      .set({ title, bodyMd, savedAt: at })
+      .where(eq(noteRevisions.id, last.id))
+      .run()
     return
   }
   ctx.orm.insert(noteRevisions).values({ id: newId(), noteId, title, bodyMd, savedAt: at }).run()
@@ -125,7 +129,8 @@ export function updateNote(
       .set({ ...next, updatedAt: nowIso(ctx) })
       .where(eq(notes.id, input.id))
       .run()
-    if (changes.title || changes.bodyMd) saveRevision(ctx, input.id, next.title ?? before.title, next.bodyMd ?? before.bodyMd)
+    if (changes.title || changes.bodyMd)
+      saveRevision(ctx, input.id, next.title ?? before.title, next.bodyMd ?? before.bodyMd)
     // The body itself is kept in note_revisions; the audit log only records that it changed.
     const auditChanges = { ...changes }
     if (auditChanges.bodyMd) auditChanges.bodyMd = ['…', '…']
@@ -152,7 +157,10 @@ export function listNotes(
       params[key] = filter[key]
     }
   }
-  if (!filter.applicationId) where.push('(n.application_id IS NULL OR EXISTS (SELECT 1 FROM applications a WHERE a.id = n.application_id AND a.deleted_at IS NULL))')
+  if (!filter.applicationId)
+    where.push(
+      '(n.application_id IS NULL OR EXISTS (SELECT 1 FROM applications a WHERE a.id = n.application_id AND a.deleted_at IS NULL))'
+    )
   return (
     ctx.sqlite
       .prepare(`${NOTE_SELECT} WHERE ${where.join(' AND ')} ORDER BY n.pinned DESC, n.updated_at DESC`)
@@ -177,7 +185,8 @@ export function setNoteDeleted(ctx: AppContext, id: string, deleted: boolean): v
 export function purgeNote(ctx: AppContext, id: string): void {
   tx(ctx, () => {
     const row = ctx.orm.select().from(notes).where(eq(notes.id, id)).get()
-    if (!row?.deletedAt) throw new AppError('CONFLICT', 'Só é possível excluir em definitivo itens da Lixeira')
+    if (!row?.deletedAt)
+      throw new AppError('CONFLICT', 'Só é possível excluir em definitivo itens da Lixeira')
     ctx.orm.delete(notes).where(eq(notes.id, id)).run()
     reindexNote(ctx, id)
     writeAudit(ctx, 'note', id, 'delete', { purged: [false, true] })
@@ -201,12 +210,21 @@ export function restoreNoteRevision(ctx: AppContext, revisionId: string): NoteDt
 
 export function listNoteTemplates(ctx: AppContext): NoteTemplateDto[] {
   return ctx.orm
-    .select({ id: noteTemplates.id, kind: noteTemplates.kind, name: noteTemplates.name, bodyMd: noteTemplates.bodyMd })
+    .select({
+      id: noteTemplates.id,
+      kind: noteTemplates.kind,
+      name: noteTemplates.name,
+      bodyMd: noteTemplates.bodyMd
+    })
     .from(noteTemplates)
     .all() as NoteTemplateDto[]
 }
 
 export function updateNoteTemplate(ctx: AppContext, id: string, bodyMd: string): void {
-  const res = ctx.orm.update(noteTemplates).set({ bodyMd, updatedAt: nowIso(ctx) }).where(eq(noteTemplates.id, id)).run()
+  const res = ctx.orm
+    .update(noteTemplates)
+    .set({ bodyMd, updatedAt: nowIso(ctx) })
+    .where(eq(noteTemplates.id, id))
+    .run()
   if (res.changes === 0) throw new AppError('NOT_FOUND', 'Template não encontrado')
 }

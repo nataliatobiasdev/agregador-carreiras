@@ -42,7 +42,9 @@ describe('isHttpUrl', () => {
 
 describe('diffFields', () => {
   it('returns only changed fields as [before, after]', () => {
-    expect(diffFields({ a: 1, b: 'x', c: null, updatedAt: 'x' }, { a: 1, b: 'y', c: undefined, updatedAt: 'y' })).toEqual({
+    expect(
+      diffFields({ a: 1, b: 'x', c: null, updatedAt: 'x' }, { a: 1, b: 'y', c: undefined, updatedAt: 'y' })
+    ).toEqual({
       b: ['x', 'y']
     })
   })

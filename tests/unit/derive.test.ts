@@ -1,8 +1,17 @@
 import { describe, expect, it } from 'vitest'
-import { checkOccurredAt, defaultDirection, deriveApplicationState, type TimelineEvent } from '../../src/main/domain/derive'
+import {
+  checkOccurredAt,
+  defaultDirection,
+  deriveApplicationState,
+  type TimelineEvent
+} from '../../src/main/domain/derive'
 
 let seq = 0
-function ev(type: TimelineEvent['type'], occurredAt: string, extra: Partial<TimelineEvent> = {}): TimelineEvent {
+function ev(
+  type: TimelineEvent['type'],
+  occurredAt: string,
+  extra: Partial<TimelineEvent> = {}
+): TimelineEvent {
   seq++
   return {
     id: `e${String(seq).padStart(4, '0')}`,
@@ -20,8 +29,16 @@ function ev(type: TimelineEvent['type'], occurredAt: string, extra: Partial<Time
 
 describe('deriveApplicationState', () => {
   it('starts active at the default applied stage', () => {
-    const { state, invalidEventIds } = deriveApplicationState([ev('applied', '2026-01-01T10:00:00.000Z', { direction: 'out' })], 'stage-applied')
-    expect(state).toMatchObject({ status: 'active', currentStageId: 'stage-applied', outcome: null, lastInboundAt: null })
+    const { state, invalidEventIds } = deriveApplicationState(
+      [ev('applied', '2026-01-01T10:00:00.000Z', { direction: 'out' })],
+      'stage-applied'
+    )
+    expect(state).toMatchObject({
+      status: 'active',
+      currentStageId: 'stage-applied',
+      outcome: null,
+      lastInboundAt: null
+    })
     expect(state.lastActivityAt).toBe('2026-01-01T10:00:00.000Z')
     expect(invalidEventIds).toEqual([])
   })
@@ -31,7 +48,10 @@ describe('deriveApplicationState', () => {
       ev('applied', '2026-01-01T10:00:00.000Z'),
       ev('stage_changed', '2026-01-10T10:00:00.000Z', { stageId: 'tech' }),
       // recorded later, but happened earlier
-      ev('stage_changed', '2026-01-05T10:00:00.000Z', { stageId: 'hr', recordedAt: '2026-01-11T00:00:00.000Z' })
+      ev('stage_changed', '2026-01-05T10:00:00.000Z', {
+        stageId: 'hr',
+        recordedAt: '2026-01-11T00:00:00.000Z'
+      })
     ]
     expect(deriveApplicationState(events, 'applied').state.currentStageId).toBe('tech')
   })
@@ -94,11 +114,26 @@ describe('deriveApplicationState', () => {
     const stageWithout = ev('stage_changed', '2026-01-07T10:00:00.000Z')
     const closedNoOutcome = ev('closed', '2026-01-01T11:00:00.000Z')
     const { invalidEventIds } = deriveApplicationState(
-      [ev('applied', '2026-01-01T10:00:00.000Z'), resumed, reopened, ...closedTwice, pausedWhileClosed, stageWithout, closedNoOutcome],
+      [
+        ev('applied', '2026-01-01T10:00:00.000Z'),
+        resumed,
+        reopened,
+        ...closedTwice,
+        pausedWhileClosed,
+        stageWithout,
+        closedNoOutcome
+      ],
       'a'
     )
     expect(invalidEventIds.sort()).toEqual(
-      [resumed.id, reopened.id, closedTwice[1]!.id, pausedWhileClosed.id, stageWithout.id, closedNoOutcome.id].sort()
+      [
+        resumed.id,
+        reopened.id,
+        closedTwice[1]!.id,
+        pausedWhileClosed.id,
+        stageWithout.id,
+        closedNoOutcome.id
+      ].sort()
     )
   })
 
@@ -120,7 +155,10 @@ describe('deriveApplicationState', () => {
   })
 
   it('uses the stage of the applied event when present', () => {
-    expect(deriveApplicationState([ev('applied', '2026-01-01T10:00:00.000Z', { stageId: 'x' })], 'a').state.currentStageId).toBe('x')
+    expect(
+      deriveApplicationState([ev('applied', '2026-01-01T10:00:00.000Z', { stageId: 'x' })], 'a').state
+        .currentStageId
+    ).toBe('x')
   })
 })
 
@@ -146,6 +184,8 @@ describe('checkOccurredAt', () => {
     expect(checkOccurredAt('2026-11-16T12:30:00.000Z', '2026-11-01T00:00:00.000Z', now)).toBe('future')
   })
   it('flags dates before the application', () => {
-    expect(checkOccurredAt('2026-10-01T00:00:00.000Z', '2026-11-01T00:00:00.000Z', now)).toBe('before_applied')
+    expect(checkOccurredAt('2026-10-01T00:00:00.000Z', '2026-11-01T00:00:00.000Z', now)).toBe(
+      'before_applied'
+    )
   })
 })

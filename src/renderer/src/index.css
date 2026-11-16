@@ -1,0 +1,62 @@
+@import '@fontsource-variable/inter';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: 248 249 251;
+  --panel: 255 255 255;
+  --subtle: 241 243 246;
+  --border: 222 226 232;
+  --fg: 22 25 31;
+  --muted: 96 104 117;
+  --accent: 79 70 229;
+  --accent-fg: 255 255 255;
+  --danger: 200 40 40;
+  --success: 22 128 61;
+  --warning: 180 100 0;
+  color-scheme: light;
+}
+
+:root.dark {
+  --bg: 13 15 20;
+  --panel: 21 24 31;
+  --subtle: 29 33 42;
+  --border: 45 50 62;
+  --fg: 232 235 240;
+  --muted: 152 160 174;
+  --accent: 129 140 248;
+  --accent-fg: 13 15 20;
+  --danger: 248 113 113;
+  --success: 74 222 128;
+  --warning: 251 191 36;
+  color-scheme: dark;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  @apply bg-bg text-fg font-sans text-sm antialiased;
+}
+
+*:focus-visible {
+  @apply outline-none ring-2 ring-accent ring-offset-1 ring-offset-bg;
+}
+
+::selection {
+  background: rgb(var(--accent) / 0.25);
+}
+
+.scroll-thin::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+.scroll-thin::-webkit-scrollbar-thumb {
+  background: rgb(var(--border));
+  border-radius: 8px;
+  border: 2px solid rgb(var(--bg));
+}

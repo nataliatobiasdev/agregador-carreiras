@@ -9,14 +9,38 @@ describe('migrations', () => {
     const db = openSqlite(join(tempDir(), 'a.db'))
     const applied = runMigrations(db)
     expect(applied).toEqual(MIGRATIONS.map((m) => m.name))
-    const tables = (db.prepare(`SELECT name FROM sqlite_master WHERE type IN ('table')`).all() as { name: string }[]).map(
-      (r) => r.name
-    )
+    const tables = (
+      db.prepare(`SELECT name FROM sqlite_master WHERE type IN ('table')`).all() as { name: string }[]
+    ).map((r) => r.name)
     for (const t of [
-      'companies', 'contacts', 'applications', 'application_contacts', 'stages', 'events', 'interviews', 'interview_contacts',
-      'assessments', 'offers', 'tasks', 'reminders', 'automation_rules', 'notes', 'note_revisions', 'note_templates', 'files',
-      'documents', 'document_versions', 'attachments', 'tags', 'taggings', 'goals', 'templates', 'settings', 'audit_log',
-      'list_items', 'search_index'
+      'companies',
+      'contacts',
+      'applications',
+      'application_contacts',
+      'stages',
+      'events',
+      'interviews',
+      'interview_contacts',
+      'assessments',
+      'offers',
+      'tasks',
+      'reminders',
+      'automation_rules',
+      'notes',
+      'note_revisions',
+      'note_templates',
+      'files',
+      'documents',
+      'document_versions',
+      'attachments',
+      'tags',
+      'taggings',
+      'goals',
+      'templates',
+      'settings',
+      'audit_log',
+      'list_items',
+      'search_index'
     ]) {
       expect(tables).toContain(t)
     }
@@ -34,7 +58,9 @@ describe('migrations', () => {
     expect(pendingMigrations(db)).toEqual([])
     const stages = db.prepare('SELECT count(*) AS n FROM stages').get() as { n: number }
     expect(stages.n).toBe(9)
-    const defaults = db.prepare('SELECT count(*) AS n FROM stages WHERE is_default_applied = 1').get() as { n: number }
+    const defaults = db.prepare('SELECT count(*) AS n FROM stages WHERE is_default_applied = 1').get() as {
+      n: number
+    }
     expect(defaults.n).toBe(1)
     const rules = db.prepare('SELECT count(*) AS n FROM automation_rules').get() as { n: number }
     expect(rules.n).toBe(9)

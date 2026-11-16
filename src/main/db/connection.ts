@@ -7,7 +7,10 @@ export type Sqlite = Database.Database
 
 /** Opens the SQLite file with the pragmas required by the spec (section 7.2). */
 export function openSqlite(file: string, options: { readonly?: boolean } = {}): Sqlite {
-  const db = new Database(file, { readonly: options.readonly ?? false, fileMustExist: options.readonly ?? false })
+  const db = new Database(file, {
+    readonly: options.readonly ?? false,
+    fileMustExist: options.readonly ?? false
+  })
   if (!options.readonly) {
     db.pragma('journal_mode = WAL')
     db.pragma('synchronous = FULL')

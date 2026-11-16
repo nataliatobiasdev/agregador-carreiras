@@ -157,7 +157,12 @@ export interface ApplicationDetail {
   /** Share of the fields that feed metrics which are filled in (0 to 1). */
   completeness: number
   missingFields: string[]
-  otherApplicationsAtCompany: Array<{ id: string; title: string; appliedAt: string; status: ApplicationStatus }>
+  otherApplicationsAtCompany: Array<{
+    id: string
+    title: string
+    appliedAt: string
+    status: ApplicationStatus
+  }>
 }
 
 export interface TimelineEventDto {
