@@ -27,7 +27,10 @@
       "better-sqlite3",
       "electron",
       "esbuild"
-    ]
+    ],
+    "overrides": {
+      "@electron/node-gyp": "10.2.0-electron.1"
+    }
   },
   "devDependencies": {
     "@eslint/js": "9.36.0",
