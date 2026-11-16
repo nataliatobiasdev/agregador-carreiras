@@ -35,6 +35,10 @@ Ações no detalhe: mudar etapa (**E**), interação recebida ou enviada (**I**)
 - **Arquivar**, **Lixeira** de 30 dias, **desfazer** por 10 s (**Ctrl+Z**).
 - **Anexos** por arrastar, botão ou **Ctrl+V** de um print.
 - **Backup** diário automático, manual, pasta extra, testar e restaurar.
-- **Tema** claro, escuro ou seguindo o Windows.
+- **Tema** claro, escuro ou seguindo o Windows, com a paleta do [Nevora](/guia/identidade-visual).
 
 <img class="shot" src="/img/backup-escuro.png" alt="Configurações com backup e etapas no tema escuro">
+
+O mesmo app no tema claro:
+
+<img class="shot" src="/img/candidaturas-claro.png" alt="Lista de candidaturas no tema claro">

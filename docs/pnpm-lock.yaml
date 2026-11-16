@@ -8,6 +8,15 @@ importers:
 
   .:
     devDependencies:
+      '@fontsource-variable/inter':
+        specifier: 5.2.6
+        version: 5.2.6
+      '@fontsource-variable/jetbrains-mono':
+        specifier: 5.2.8
+        version: 5.2.8
+      '@fontsource-variable/space-grotesk':
+        specifier: 5.2.10
+        version: 5.2.10
       mermaid:
         specifier: 11.4.1
         version: 11.4.1
@@ -300,6 +309,15 @@ packages:
     engines: {node: '>=12'}
     cpu: [x64]
     os: [win32]
+
+  '@fontsource-variable/inter@5.2.6':
+    resolution: {integrity: sha512-jks/bficUPQ9nn7GvXvHtlQIPudW7Wx8CrlZoY8bhxgeobNxlQan8DclUJuYF2loYRrGpfrhCIZZspXYysiVGg==}
+
+  '@fontsource-variable/jetbrains-mono@5.2.8':
+    resolution: {integrity: sha512-WBA9elru6Jdp5df2mES55wuOO0WIrn3kpXnI4+W2ek5u3ZgLS9XS4gmIlcQhiZOWEKl95meYdvK7xI+ETLCq/Q==}
+
+  '@fontsource-variable/space-grotesk@5.2.10':
+    resolution: {integrity: sha512-yJQO/o35/hAP3CFnpdFTwQku2yzJOae2HIpBmqkOVoxhhXJaQP3g+b6Jrz7u+eI7A5ZdCIf88uMWpBJdFiGr5w==}
 
   '@iconify-json/simple-icons@1.2.102':
     resolution: {integrity: sha512-IwbAj1ZI6LBy+qU7sVYxB1wgbSSIDKjY9I0BnnpjfIdlqfXoYnBb80UvYA0WkodUFWfQyL4AjaKMg48fqX8sIw==}
@@ -1546,6 +1564,12 @@ snapshots:
 
   '@esbuild/win32-x64@0.21.5':
     optional: true
+
+  '@fontsource-variable/inter@5.2.6': {}
+
+  '@fontsource-variable/jetbrains-mono@5.2.8': {}
+
+  '@fontsource-variable/space-grotesk@5.2.10': {}
 
   '@iconify-json/simple-icons@1.2.102':
     dependencies:

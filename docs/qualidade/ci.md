@@ -26,6 +26,34 @@ As duas falhas só aparecem no Windows. O desenvolvimento foi feito em Linux, on
 - **Incidente 1, dependência via SSH.** Dependência transitiva com URL `git+ssh` quebra qualquer ambiente sem chave. A correção fixa a versão publicada no npm, que também torna o lockfile reprodutível.
 - **Incidente 2, arquivo travado.** A ordem de limpeza dos testes estava invertida. A correção também melhorou o app: se a migração falhar ao abrir, o banco é fechado, então o arquivo pode ser restaurado ou substituído sem reiniciar o Windows.
 
-## Documentação
+## Documentação e GitHub Pages
 
-Um segundo workflow, `.github/workflows/docs.yml`, roda em Ubuntu e publica este site no GitHub Pages quando algo em `docs/` muda na `main`. Ele é independente do CI do app.
+O workflow `.github/workflows/docs.yml` roda em Ubuntu e é **o único que publica no Pages**. Ele é independente do CI do app.
+
+```mermaid
+flowchart LR
+  P["PR que muda docs/"] --> B1["build VitePress<br/>(só valida)"]
+  M["push na main<br/>em docs/ ou no workflow"] --> B2["configure-pages<br/>pnpm build"] --> U["upload-pages-artifact<br/>docs/.vitepress/dist"] --> D["deploy-pages<br/>ambiente github-pages"]
+  W["Run workflow<br/>(manual)"] --> B2
+```
+
+| Configuração | Valor |
+| --- | --- |
+| Fonte do Pages (Settings → Pages) | **GitHub Actions** |
+| Disparo | PR (só build), push na `main` em `docs/**` ou no próprio workflow, manual |
+| Concorrência | Um deploy por ref; o mais novo cancela o anterior |
+| Histórico completo (`fetch-depth: 0`) | Necessário para “Atualizado em” de cada página |
+
+### Incidente 3: site substituído pela raiz do repositório
+
+| Quando | O que aconteceu |
+| --- | --- |
+| 15h03 | Merge do [PR #3](https://github.com/nataliatobiasdev/agregador-carreiras/pull/3); o workflow Docs publica o site VitePress (build e deploy verdes) |
+| 15h08 | Um `static.yml` (modelo “Static HTML” do GitHub) entra na `main` e publica a raiz do repositório (`path: '.'`) por cima do site |
+| 15h16 | Merge do [PR #4](https://github.com/nataliatobiasdev/agregador-carreiras/pull/4): remove o `static.yml` e o Docs republica o site |
+
+Horários de Brasília, 16/11/2026.
+
+- **Causa:** dois workflows publicando no mesmo ambiente `github-pages`; vence o último deploy.
+- **Correção:** um só workflow publica. `docs.yml` ganhou `actions/configure-pages` e um comentário que proíbe um segundo publicador; como o arquivo mudou, o merge disparou o novo deploy.
+- **Lição:** ao trocar a fonte do Pages para “GitHub Actions”, o GitHub sugere modelos prontos. Não é preciso criar nenhum: o workflow do repositório já cobre o deploy.

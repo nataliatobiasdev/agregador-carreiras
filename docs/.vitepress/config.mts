@@ -11,12 +11,17 @@ export default withMermaid(
     base: '/agregador-carreiras/',
     cleanUrls: true,
     lastUpdated: true,
-    head: [['link', { rel: 'icon', type: 'image/svg+xml', href: '/agregador-carreiras/logo.svg' }]],
+    head: [
+      ['link', { rel: 'icon', type: 'image/png', sizes: '32x32', href: '/agregador-carreiras/favicon-32.png' }],
+      ['link', { rel: 'icon', type: 'image/png', sizes: '64x64', href: '/agregador-carreiras/favicon-64.png' }],
+      ['link', { rel: 'apple-touch-icon', href: '/agregador-carreiras/icon-256.png' }],
+      ['meta', { name: 'theme-color', content: '#0B0E19' }]
+    ],
     markdown: { lineNumbers: false },
     // Isola o site do postcss.config.js (Tailwind) do app na raiz do repositório.
     vite: { css: { postcss: { plugins: [] } } },
     themeConfig: {
-      logo: '/logo.svg',
+      logo: '/favicon-64.png',
       siteTitle: 'CAM Docs',
       nav: [
         { text: 'Visão geral', link: '/guia/visao', activeMatch: '/guia/' },
@@ -24,7 +29,7 @@ export default withMermaid(
         { text: 'Dados', link: '/dados/modelo', activeMatch: '/dados/' },
         { text: 'Qualidade', link: '/qualidade/testes', activeMatch: '/qualidade/' },
         { text: 'Decisões', link: '/decisoes' },
-        { text: 'Roadmap', link: '/roadmap' },
+        { text: 'Roadmap', link: '/roadmap', activeMatch: '/(roadmap|planejado/)' },
         { text: 'v1.0', items: [{ text: 'PR #1: V1.0', link: `${repo}/pull/1` }, { text: 'Actions', link: `${repo}/actions` }] }
       ],
       sidebar: [
@@ -33,6 +38,7 @@ export default withMermaid(
           items: [
             { text: 'Produto e escopo', link: '/guia/visao' },
             { text: 'Funcionalidades da V1.0', link: '/guia/funcionalidades' },
+            { text: 'Identidade visual', link: '/guia/identidade-visual' },
             { text: 'Rodar e contribuir', link: '/guia/desenvolvimento' }
           ]
         },
@@ -69,7 +75,9 @@ export default withMermaid(
           text: 'Decisões e futuro',
           items: [
             { text: 'Decisões (ADRs)', link: '/decisoes' },
-            { text: 'Limitações e roadmap', link: '/roadmap' }
+            { text: 'Limitações e roadmap', link: '/roadmap' },
+            { text: 'Rotina diária (planejado)', link: '/planejado/rotina' },
+            { text: 'Jornada (planejado)', link: '/planejado/jornada' }
           ]
         }
       ],
@@ -101,7 +109,7 @@ export default withMermaid(
       langMenuLabel: 'Idioma',
       notFound: { title: 'Página não encontrada', quote: 'Este endereço não existe na documentação.', linkText: 'Voltar ao início' },
       footer: {
-        message: 'Documentação técnica do Career Application Manager · estado da V1.0',
+        message: 'Documentação técnica do Career Application Manager · V1.0 com Nevora e ícone novo',
         copyright: 'Copyright © 2026 Natalia Tobias'
       }
     },

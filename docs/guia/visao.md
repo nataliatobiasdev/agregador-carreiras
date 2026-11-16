@@ -24,8 +24,8 @@ A fronteira é deliberada: o scraper de vagas é outro projeto. O CAM não tem n
 
 ## Estado documentado
 
-- Código: `main` após o merge do [PR #1](https://github.com/nataliatobiasdev/agregador-carreiras/pull/1), 16/11/2026.
+- Código: `main` em `29ba472` (16/11/2026): V1.0 do [PR #1](https://github.com/nataliatobiasdev/agregador-carreiras/pull/1), design system Nevora do [PR #5](https://github.com/nataliatobiasdev/agregador-carreiras/pull/5) e ícone novo do [PR #7](https://github.com/nataliatobiasdev/agregador-carreiras/pull/7).
 - Alvo: Windows x64, instalação por usuário, sem administrador.
-- Toda afirmação desta documentação vem do código ou do PR. Intenções futuras estão separadas no [Roadmap](/roadmap).
+- Toda afirmação desta documentação vem do código ou dos PRs mesclados. O que ainda é plano aparece com o selo <span class="tag plan">planejado</span> e fica no [Roadmap](/roadmap) e nas páginas de [Rotina diária](/planejado/rotina) e [Jornada](/planejado/jornada).
 
 <img class="shot" src="/img/candidaturas.png" alt="Lista de candidaturas em tabela com filtros por status, empresa e período">
