@@ -66,10 +66,16 @@ export function createContext(options: CreateContextOptions): AppContext {
   const open = (): void => {
     const existed = existsSync(paths.database)
     const db = openSqlite(paths.database)
-    if (existed && appliedMigrations(db).length > 0 && pendingMigrations(db).length > 0) {
-      options.beforeMigrate?.(db, paths)
+    try {
+      if (existed && appliedMigrations(db).length > 0 && pendingMigrations(db).length > 0) {
+        options.beforeMigrate?.(db, paths)
+      }
+      runMigrations(db, now)
+    } catch (e) {
+      // Release the file so it can be replaced or restored (Windows locks open files).
+      db.close()
+      throw e
     }
-    runMigrations(db, now)
     sqlite = db
     orm = createOrm(db)
   }

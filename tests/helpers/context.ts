@@ -39,7 +39,8 @@ export function makeContext(
   dataDir = tempDir()
 ): AppContext & { clock: TestClock } {
   const ctx = createContext({ dataDir, now: clock.now, appVersion: '1.0.0-test' })
-  cleanups.unshift(() => {
+  // Cleanups run last-in first-out, so the database closes before its folder is removed (Windows refuses to delete open files).
+  cleanups.push(() => {
     try {
       ctx.close()
     } catch {
