@@ -11,12 +11,12 @@ export default withMermaid(
     base: '/agregador-carreiras/',
     cleanUrls: true,
     lastUpdated: true,
-    head: [['link', { rel: 'icon', type: 'image/svg+xml', href: '/agregador-carreiras/logo.svg' }]],
+    head: [['link', { rel: 'icon', type: 'image/png', href: '/agregador-carreiras/logo.png' }]],
     markdown: { lineNumbers: false },
     // Isola o site do postcss.config.js (Tailwind) do app na raiz do repositório.
     vite: { css: { postcss: { plugins: [] } } },
     themeConfig: {
-      logo: '/logo.svg',
+      logo: '/logo.png',
       siteTitle: 'CAM Docs',
       nav: [
         { text: 'Visão geral', link: '/guia/visao', activeMatch: '/guia/' },
