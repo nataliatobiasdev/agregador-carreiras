@@ -26,7 +26,7 @@ As versões depois da V1.1 vêm do planejamento de produto e ainda não têm esc
 | Biblioteca de currículos versionados; currículo enviado por candidatura | Sem tela | V1.1 (tabelas e trigger já existem) |
 | Dashboard, metas, exportação CSV | Analytics | V1.1/V3 (`goals` já existe) |
 | Modelos de cadastro rápido | `templates` sem tela | V1.1 |
-| Ícone do app e assinatura de código | Exige ativo gráfico e certificado | A definir |
+| Assinatura de código | Exige certificado | A definir |
 
 ## Limitações técnicas atuais
 

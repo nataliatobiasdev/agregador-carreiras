@@ -6,7 +6,7 @@ hero:
   text: Documentação técnica da V1.0
   tagline: App desktop Windows, local e offline, para registrar candidaturas e acompanhar cada processo seletivo até o desfecho.
   image:
-    src: /logo.svg
+    src: /logo.png
     alt: Logo do CAM
   actions:
     - theme: brand

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { NavLink, Navigate, Route, Routes, useNavigate } from 'react-router-dom'
+import appIcon from './assets/app-icon.png'
 import { Briefcase, Building2, NotebookPen, Plus, Search, Settings, Trash2, Users } from 'lucide-react'
 import { CommandPalette } from './components/CommandPalette'
 import { QuickAddDialog } from './components/QuickAddDialog'
@@ -84,12 +85,7 @@ export default function App() {
       <div className="flex h-full">
         <aside className="flex w-60 shrink-0 flex-col border-r border-border bg-panel/80">
           <div className="flex items-center gap-2.5 px-4 py-4">
-            <div
-              aria-hidden
-              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-gradient-to-br from-accent to-secondary font-heading text-sm font-bold text-accent-fg"
-            >
-              C
-            </div>
+            <img src={appIcon} alt="" aria-hidden className="h-8 w-8 shrink-0" />
             <div className="min-w-0">
               <div className="font-heading text-sm font-semibold leading-tight">
                 Career Application Manager

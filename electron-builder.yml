@@ -7,12 +7,15 @@ directories:
 files:
   - out/**
   - package.json
+  # Window icon loaded at runtime by the main process (out/main -> ../../resources).
+  - resources/**
 asarUnpack:
   - '**/node_modules/better-sqlite3/**'
   - '**/node_modules/bindings/**'
   - '**/node_modules/file-uri-to-path/**'
 npmRebuild: true
 win:
+  icon: build/icon.ico
   target:
     - target: nsis
       arch: [x64]
@@ -29,4 +32,5 @@ nsis:
   # User data lives in %APPDATA%\CAM and is never removed by the uninstaller.
   deleteAppDataOnUninstall: false
 linux:
+  icon: build/icon.png
   target: dir

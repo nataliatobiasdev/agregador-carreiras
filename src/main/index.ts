@@ -7,6 +7,7 @@ import { registerIpc } from './ipc/register'
 import { configureLogging, log } from './logger'
 import { preMigrationBackup, runScheduledBackup } from './services/backup'
 import { purgeExpired } from './services/trash'
+import appIcon from '../../resources/icon.png?asset'
 
 /** Must match electron-builder's appId (Windows needs it for native notifications). */
 const APP_ID = 'com.nataliatobias.cam'
@@ -41,6 +42,8 @@ function createWindow(): BrowserWindow {
     minHeight: 600,
     show: false,
     title: 'Career Application Manager',
+    // Window and taskbar icon in dev and on Linux; the packaged Windows build uses build/icon.ico.
+    icon: appIcon,
     backgroundColor: '#0b0d12',
     autoHideMenuBar: true,
     webPreferences: {
