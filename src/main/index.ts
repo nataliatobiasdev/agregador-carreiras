@@ -1,5 +1,7 @@
 import { join } from 'node:path'
 import { app, BrowserWindow, dialog, Menu, session, shell, type IpcMainInvokeEvent } from 'electron'
+import iconIco from '../../build/icon.ico?asset'
+import iconPng from '../../build/icon.png?asset'
 import { type AppContext, createContext } from './context'
 import { isHttpUrl } from './domain/normalize'
 import type { ElectronBridge } from './ipc/handlers'
@@ -13,6 +15,8 @@ const APP_ID = 'com.nataliatobias.cam'
 const HOURLY = 60 * 60 * 1000
 
 const isDev = !app.isPackaged
+// The packaged .exe already carries the icon; setting it here covers dev runs and Linux.
+const WINDOW_ICON = process.platform === 'win32' ? iconIco : iconPng
 
 // Dates, numbers and native inputs (date pickers) in Brazilian Portuguese regardless of the OS language.
 app.commandLine.appendSwitch('lang', 'pt-BR')
@@ -41,6 +45,7 @@ function createWindow(): BrowserWindow {
     minHeight: 600,
     show: false,
     title: 'Career Application Manager',
+    icon: WINDOW_ICON,
     backgroundColor: '#0b0d12',
     autoHideMenuBar: true,
     webPreferences: {
