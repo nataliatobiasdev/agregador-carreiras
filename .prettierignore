@@ -3,3 +3,4 @@ dist
 node_modules
 src/main/db/migrations
 pnpm-lock.yaml
+docs
