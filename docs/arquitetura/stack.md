@@ -17,7 +17,8 @@ A stack foi decidida pela Natalia em 16/11/2026, depois de um primeiro plano que
 | Electron | 38.8.6 | Runtime desktop |
 | React + React Router | 18.3 / 6.30 | Interface |
 | TanStack Query | 5.90 | Cache de dados no renderer, invalidado por `cam:data-changed` |
-| Tailwind + cmdk + lucide | 3.4 / 1.1 / 0.544 | Estilo, paleta Ctrl+K, ícones |
+| Tailwind + cmdk + lucide | 3.4 / 1.1 / 0.544 | Estilo com os tokens do [Nevora](/guia/identidade-visual), paleta Ctrl+K, ícones |
+| `@fontsource-variable/*` | Inter 5.2.6, Space Grotesk 5.2.10, JetBrains Mono 5.2.8 | Fontes empacotadas localmente (a CSP só aceita `font-src 'self'`) |
 | better-sqlite3 | 12.11.1 | SQLite síncrono no processo principal |
 | Drizzle ORM / drizzle-kit | 0.44.7 / 0.31.5 | Schema tipado e SQL de migração legível e versionado |
 | Zod | 3.25 | Validação de toda entrada IPC |

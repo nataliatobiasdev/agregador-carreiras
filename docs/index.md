@@ -3,11 +3,11 @@ layout: home
 title: Início
 hero:
   name: Career Application Manager
-  text: Documentação técnica da V1.0
+  text: Documentação técnica
   tagline: App desktop Windows, local e offline, para registrar candidaturas e acompanhar cada processo seletivo até o desfecho.
   image:
-    src: /logo.svg
-    alt: Logo do CAM
+    src: /logo.png
+    alt: Ícone do CAM, estrela-bússola sobre degraus
   actions:
     - theme: brand
       text: Começar pela visão geral
@@ -43,4 +43,12 @@ features:
     title: 78 testes e CI no Windows
     details: Unidade, integração com SQLite real e ponta a ponta com Playwright no app empacotado.
     link: /qualidade/testes
+  - icon: 🎨
+    title: Design system Nevora
+    details: Violeta e teal, Space Grotesk e JetBrains Mono empacotadas, tema escuro de referência e ícone novo.
+    link: /guia/identidade-visual
+  - icon: 🧩
+    title: Próximos passos
+    details: Rotina diária com tarefas e lembretes, e a Jornada, um progresso semanal medido só pelo que você faz. Planejado.
+    link: /roadmap
 ---

@@ -1,6 +1,6 @@
 # Decisões (ADRs)
 
-Registro das decisões de arquitetura no formato contexto → decisão → consequências. Status de todas: **aceita** na V1.0.
+Registro das decisões de arquitetura no formato contexto → decisão → consequências. Status de todas: **aceita**. As de 1 a 13 vêm da V1.0; 14 a 16 vieram depois, com o Nevora, o ícone e o deploy da documentação.
 
 ## Resumo
 
@@ -19,6 +19,9 @@ Registro das decisões de arquitetura no formato contexto → decisão → conse
 | 11 | Vitest no Node do Electron | Um único binário nativo | Testes dependem do Electron |
 | 12 | Markdown em vez de editor visual | Menos dependências, dados portáveis | Edição menos amigável |
 | 13 | Detalhe em página inteira | Implementação simples | Perde o contexto da lista |
+| 14 | Nevora com fontes empacotadas | Identidade própria, sem rede, CSP intacta | Instalador um pouco maior |
+| 15 | Ícone gerado por script a partir de uma arte | Tamanhos pequenos legíveis, reprodutível | Python/Pillow só para regenerar |
+| 16 | Um único workflow publica o Pages | Site sempre igual ao `docs/` da `main` | Fonte do Pages precisa ser “GitHub Actions” |
 
 ## ADR-1: Sem scraping nem importação de vagas
 
@@ -67,3 +70,21 @@ Registro das decisões de arquitetura no formato contexto → decisão → conse
 **Contexto.** better-sqlite3 é nativo e precisa do ABI certo; manter dois builds (Node e Electron) gera erros de “módulo compilado para outra versão”.
 **Decisão.** Rodar o Vitest com `ELECTRON_RUN_AS_NODE=1` usando o binário do Electron.
 **Consequências.** Os testes usam o mesmo `.node` do instalador. O Electron precisa estar baixado para rodar os testes.
+
+## ADR-14: Design system Nevora com fontes empacotadas
+
+**Contexto.** A V1.0 usava uma paleta neutra. A Natalia escolheu o Nevora (Figma Make) como identidade, com Space Grotesk e JetBrains Mono.
+**Decisão.** Mapear os tokens do Nevora nas variáveis CSS que já existiam, em vez de trocar o sistema de estilos; acrescentar só `secondary`, `field` e `overlay`. Empacotar as fontes via `@fontsource-variable` em vez de carregar do Google Fonts.
+**Consequências.** A troca de visual mexeu em 12 arquivos do renderer e nenhum do processo principal. A CSP (`font-src 'self'`) e o bloqueio de rede continuam iguais. O Nevora não tem tema claro; o claro é uma derivação com contraste AA.
+
+## ADR-15: Ícone gerado por script
+
+**Contexto.** A arte do ícone veio como PNG sem canal alfa, com o xadrez de transparência pintado nos pixels, e o Windows precisa de um `.ico` com vários tamanhos legíveis.
+**Decisão.** `scripts/icons/generate_icons.py` recorta, gera a sombra em alfa real e produz o `.ico` e os PNGs; a arte original fica intacta em `build/icon-source/`. Os arquivos gerados são versionados, então o build não depende de Python.
+**Consequências.** Trocar a arte é rodar um script. O script falha se um canto sair opaco.
+
+## ADR-16: Um único workflow publica o GitHub Pages
+
+**Contexto.** Um segundo workflow (`static.yml`) publicou a raiz do repositório por cima do site. Ver [Incidente 3](/qualidade/ci#incidente-3-site-substituido-pela-raiz-do-repositorio).
+**Decisão.** Só `docs.yml` publica, com a fonte do Pages em “GitHub Actions”.
+**Consequências.** O site é sempre o build de `docs/` na `main`. Um novo workflow de Pages deve ser recusado em revisão.
