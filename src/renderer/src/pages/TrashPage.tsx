@@ -23,7 +23,7 @@ export function TrashPage() {
         ) : !data?.length ? (
           <EmptyState title="A Lixeira está vazia" />
         ) : (
-          <ul className="divide-y divide-border rounded-lg border border-border bg-panel">
+          <ul className="surface divide-y divide-border rounded-lg border border-border bg-panel">
             {data.map((i) => (
               <li key={`${i.entityType}-${i.id}`} className="flex items-center gap-3 px-3 py-2">
                 <span className="w-24 text-xs text-muted">{label('entityType', i.entityType)}</span>
@@ -36,7 +36,7 @@ export function TrashPage() {
                 <Button size="sm" onClick={() => restore.mutate({ entityType: i.entityType, id: i.id })}>
                   Restaurar
                 </Button>
-                <Button size="sm" variant="ghost" className="text-danger" onClick={() => setPurging(i)}>
+                <Button size="sm" variant="ghost" className="!text-danger" onClick={() => setPurging(i)}>
                   Excluir em definitivo
                 </Button>
               </li>

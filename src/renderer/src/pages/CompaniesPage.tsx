@@ -42,8 +42,8 @@ export function CompaniesPage() {
             description="Empresas são criadas automaticamente ao registrar uma candidatura."
           />
         ) : (
-          <table className="w-full overflow-hidden rounded-lg border border-border bg-panel text-sm">
-            <thead className="border-b border-border bg-subtle text-xs text-muted">
+          <table className="surface w-full overflow-hidden rounded-lg border border-border bg-panel text-sm">
+            <thead className="border-b border-border bg-fg/[0.03] font-mono text-[11px] uppercase tracking-wide text-muted">
               <tr>
                 <th className="px-3 py-2 text-left font-medium">Empresa</th>
                 <th className="px-3 py-2 text-right font-medium">Candidaturas</th>
@@ -219,7 +219,7 @@ export function CompanyPage() {
           {!apps?.length ? (
             <p className="text-sm text-muted">Nenhuma candidatura.</p>
           ) : (
-            <ul className="divide-y divide-border rounded-lg border border-border bg-panel">
+            <ul className="surface divide-y divide-border rounded-lg border border-border bg-panel">
               {apps.map((a) => (
                 <li key={a.id}>
                   <Link
@@ -238,7 +238,7 @@ export function CompanyPage() {
           {!contacts?.length ? (
             <p className="text-sm text-muted">Nenhum contato desta empresa.</p>
           ) : (
-            <ul className="divide-y divide-border rounded-lg border border-border bg-panel">
+            <ul className="surface divide-y divide-border rounded-lg border border-border bg-panel">
               {contacts.map((c) => (
                 <li key={c.id}>
                   <Link to={`/contatos?id=${c.id}`} className="flex gap-3 px-3 py-2 hover:bg-subtle">

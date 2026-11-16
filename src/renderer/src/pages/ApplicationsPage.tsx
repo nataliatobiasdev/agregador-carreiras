@@ -13,7 +13,7 @@ import {
   PageHeader,
   Select,
   Spinner,
-  statusColor
+  statusTone
 } from '../components/ui'
 import { formatDate, relativeDays } from '../lib/format'
 import { useCam, useCamMutation } from '../lib/hooks'
@@ -23,7 +23,7 @@ type View = 'table' | 'list'
 
 export function StatusBadge({ status, outcome }: { status: string; outcome?: string | null }) {
   return (
-    <Badge color={statusColor(status)}>
+    <Badge tone={statusTone(status)} dot>
       {label('status', status)}
       {status === 'closed' && outcome ? ` · ${label('outcome', outcome)}` : ''}
     </Badge>
@@ -197,7 +197,7 @@ function ApplicationsTable({ apps, onOpen }: { apps: ApplicationListItem[]; onOp
   const th = (key: SortKey, text: string) => (
     <th scope="col" className="px-3 py-2 text-left font-medium">
       <button
-        className="hover:text-fg"
+        className="uppercase tracking-wide hover:text-fg"
         onClick={() => setSort((s) => ({ key, dir: s.key === key ? (-s.dir as 1 | -1) : 1 }))}
         aria-sort={sort.key === key ? (sort.dir === 1 ? 'ascending' : 'descending') : 'none'}
       >
@@ -206,9 +206,9 @@ function ApplicationsTable({ apps, onOpen }: { apps: ApplicationListItem[]; onOp
     </th>
   )
   return (
-    <div className="overflow-hidden rounded-lg border border-border bg-panel">
+    <div className="surface overflow-hidden rounded-lg border border-border bg-panel">
       <table className="w-full text-sm">
-        <thead className="border-b border-border bg-subtle text-xs text-muted">
+        <thead className="border-b border-border bg-fg/[0.03] font-mono text-[11px] uppercase tracking-wide text-muted">
           <tr>
             {th('companyName', 'Empresa')}
             {th('title', 'Cargo')}
@@ -228,7 +228,7 @@ function ApplicationsTable({ apps, onOpen }: { apps: ApplicationListItem[]; onOp
             <tr
               key={a.id}
               tabIndex={0}
-              className="cursor-pointer border-b border-border last:border-0 hover:bg-subtle focus:bg-subtle"
+              className="cursor-pointer border-b border-border transition-colors last:border-0 hover:bg-subtle focus:bg-subtle"
               onClick={() => onOpen(a.id)}
               onKeyDown={(e) => e.key === 'Enter' && onOpen(a.id)}
             >
@@ -241,7 +241,9 @@ function ApplicationsTable({ apps, onOpen }: { apps: ApplicationListItem[]; onOp
               <td className="px-3 py-2">
                 <StatusBadge status={a.status} outcome={a.outcome} />
               </td>
-              <td className="px-3 py-2 tabular-nums text-muted">{formatDate(a.appliedAt)}</td>
+              <td className="px-3 py-2 font-mono text-xs tabular-nums text-muted">
+                {formatDate(a.appliedAt)}
+              </td>
               <td className="px-3 py-2 text-muted">{relativeDays(a.lastActivityAt)}</td>
               <td className="px-3 py-2 text-muted">{a.platform}</td>
             </tr>
@@ -261,10 +263,10 @@ function ApplicationsList({ apps, onOpen }: { apps: ApplicationListItem[]; onOpe
     <div className="space-y-5">
       {groups.map((g) => (
         <section key={g.status}>
-          <h2 className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-muted">
+          <h2 className="mb-1.5 font-mono text-xs font-semibold uppercase tracking-wide text-muted">
             {label('status', g.status)} · {g.items.length}
           </h2>
-          <ul className="divide-y divide-border rounded-lg border border-border bg-panel">
+          <ul className="surface divide-y divide-border rounded-lg border border-border bg-panel">
             {g.items.map((a) => (
               <li key={a.id}>
                 <button

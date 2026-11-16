@@ -82,10 +82,20 @@ export default function App() {
   return (
     <UndoContext.Provider value={undo}>
       <div className="flex h-full">
-        <aside className="flex w-56 shrink-0 flex-col border-r border-border bg-panel">
-          <div className="px-4 py-4">
-            <div className="text-sm font-semibold">Career Application Manager</div>
-            <div className="text-xs text-muted">Suas candidaturas, organizadas</div>
+        <aside className="flex w-60 shrink-0 flex-col border-r border-border bg-panel/80">
+          <div className="flex items-center gap-2.5 px-4 py-4">
+            <div
+              aria-hidden
+              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-gradient-to-br from-accent to-secondary font-heading text-sm font-bold text-accent-fg"
+            >
+              C
+            </div>
+            <div className="min-w-0">
+              <div className="font-heading text-sm font-semibold leading-tight">
+                Career Application Manager
+              </div>
+              <div className="mt-0.5 text-xs text-muted">Suas candidaturas, organizadas</div>
+            </div>
           </div>
           <div className="flex flex-col gap-1 px-2">
             <Button
@@ -95,16 +105,18 @@ export default function App() {
               className="justify-start"
             >
               Nova candidatura
-              <kbd className="ml-auto text-[10px] opacity-70">Ctrl+N</kbd>
+              <kbd className="ml-auto font-mono text-[10px] opacity-70">Ctrl+N</kbd>
             </Button>
             <Button
               variant="ghost"
               icon={<Search size={14} />}
               onClick={() => setPalette(true)}
-              className="justify-start text-muted"
+              className="justify-start border border-border bg-field"
             >
               Buscar
-              <kbd className="ml-auto text-[10px] opacity-70">Ctrl+K</kbd>
+              <kbd className="ml-auto rounded border border-border bg-fg/[0.06] px-1.5 font-mono text-[10px]">
+                Ctrl+K
+              </kbd>
             </Button>
           </div>
           <nav className="mt-3 flex flex-col gap-0.5 px-2" aria-label="Navegação principal">
@@ -114,8 +126,10 @@ export default function App() {
                 to={item.to}
                 className={({ isActive }) =>
                   cn(
-                    'flex items-center gap-2 rounded-md px-2.5 py-1.5 text-sm',
-                    isActive ? 'bg-subtle font-medium text-fg' : 'text-muted hover:bg-subtle hover:text-fg'
+                    'flex items-center gap-2.5 rounded-md border-l-2 px-2.5 py-1.5 text-sm font-medium transition-colors',
+                    isActive
+                      ? 'border-accent bg-gradient-to-r from-accent/20 to-transparent text-fg [&>svg]:text-accent'
+                      : 'border-transparent text-muted hover:bg-fg/[0.05] hover:text-fg'
                   )
                 }
               >

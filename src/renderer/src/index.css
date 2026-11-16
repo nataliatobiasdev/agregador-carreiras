@@ -1,35 +1,53 @@
 @import '@fontsource-variable/inter';
+@import '@fontsource-variable/space-grotesk';
+@import '@fontsource-variable/jetbrains-mono';
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/*
+ * Nevora Design System tokens.
+ * The dark theme is the reference palette from the Nevora showcase (Figma Make).
+ * The light theme keeps the same hues, darkened where needed to stay above WCAG AA on white.
+ * Values are space-separated RGB channels so Tailwind can apply opacity (bg-accent/20).
+ */
 :root {
-  --bg: 248 249 251;
+  --bg: 246 247 252;
   --panel: 255 255 255;
-  --subtle: 241 243 246;
-  --border: 222 226 232;
-  --fg: 22 25 31;
-  --muted: 96 104 117;
-  --accent: 79 70 229;
+  --subtle: 238 240 248;
+  --field: 250 251 255;
+  --border: 221 225 238;
+  --fg: 11 14 25;
+  --muted: 82 92 120;
+  --accent: 108 92 231;
   --accent-fg: 255 255 255;
-  --danger: 200 40 40;
-  --success: 22 128 61;
-  --warning: 180 100 0;
+  --secondary: 13 138 131;
+  --danger: 205 45 80;
+  --success: 18 128 88;
+  --warning: 156 96 8;
+  --overlay: 11 14 25;
+  --highlight: 255 255 255;
+  --shadow-strength: 0.08;
   color-scheme: light;
 }
 
 :root.dark {
-  --bg: 13 15 20;
-  --panel: 21 24 31;
-  --subtle: 29 33 42;
-  --border: 45 50 62;
-  --fg: 232 235 240;
-  --muted: 152 160 174;
-  --accent: 129 140 248;
-  --accent-fg: 13 15 20;
-  --danger: 248 113 113;
-  --success: 74 222 128;
-  --warning: 251 191 36;
+  --bg: 11 14 25; /* Background #0B0E19 */
+  --panel: 21 26 43; /* Surface #151A2B */
+  --subtle: 28 34 56; /* Surface hover #1C2238 */
+  --field: 14 18 30; /* Input #0E121E */
+  --border: 44 49 66; /* rgba(255,255,255,.12) sobre Surface */
+  --fg: 244 246 255; /* Text Primary #F4F6FF */
+  --muted: 166 177 203; /* Text Secondary #A6B1CB */
+  --accent: 157 140 255; /* Primary Violet #9D8CFF */
+  --accent-fg: 11 14 25;
+  --secondary: 66 214 205; /* Secondary Teal #42D6CD */
+  --danger: 255 113 141; /* Error #FF718D */
+  --success: 69 214 160; /* Success #45D6A0 */
+  --warning: 245 198 107; /* Warning #F5C66B */
+  --overlay: 5 7 13;
+  --highlight: 255 255 255;
+  --shadow-strength: 0.45;
   color-scheme: dark;
 }
 
@@ -40,23 +58,67 @@ body,
 }
 
 body {
-  @apply bg-bg text-fg font-sans text-sm antialiased;
+  @apply bg-bg font-sans text-sm text-fg antialiased;
+}
+
+/* Iluminação atmosférica sutil do Nevora (somente no tema escuro). */
+:root.dark body {
+  background-image:
+    radial-gradient(1100px circle at 15% -5%, rgb(157 140 255 / 0.045) 0%, transparent 65%),
+    radial-gradient(900px circle at 85% 35%, rgb(66 214 205 / 0.025) 0%, transparent 60%);
+  background-attachment: fixed;
+}
+
+h1,
+h2,
+h3 {
+  @apply font-heading;
 }
 
 *:focus-visible {
-  @apply outline-none ring-2 ring-accent ring-offset-1 ring-offset-bg;
+  @apply outline-none ring-2 ring-accent/70 ring-offset-1 ring-offset-bg;
 }
 
 ::selection {
-  background: rgb(var(--accent) / 0.25);
+  background: rgb(var(--accent) / 0.3);
+}
+
+@layer components {
+  /* Superfície sólida acetinada: cards, tabelas e painéis. */
+  .surface {
+    box-shadow:
+      inset 0 1px 0 0 rgb(var(--highlight) / 0.06),
+      0 2px 6px -1px rgb(0 0 0 / var(--shadow-strength));
+  }
+
+  /* Diálogos flutuantes (modais e paleta de comandos). */
+  .surface-dialog {
+    box-shadow:
+      inset 0 1px 0 0 rgb(var(--highlight) / 0.1),
+      0 24px 60px -12px rgb(0 0 0 / calc(var(--shadow-strength) + 0.25));
+  }
+
+  /* Vidro: camadas flutuantes com desfoque de 16px. */
+  .glass {
+    background: rgb(var(--panel) / 0.72);
+    backdrop-filter: blur(16px);
+  }
 }
 
 .scroll-thin::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
+  width: 8px;
+  height: 8px;
+}
+.scroll-thin::-webkit-scrollbar-track {
+  background: transparent;
 }
 .scroll-thin::-webkit-scrollbar-thumb {
-  background: rgb(var(--border));
-  border-radius: 8px;
-  border: 2px solid rgb(var(--bg));
+  background: rgb(var(--accent) / 0.25);
+  border-radius: 9999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+.scroll-thin::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--accent) / 0.5);
+  background-clip: padding-box;
 }

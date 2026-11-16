@@ -24,10 +24,13 @@ export function cn(...parts: Array<string | false | null | undefined>): string {
 
 type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger'
 const buttonStyles: Record<ButtonVariant, string> = {
-  primary: 'bg-accent text-accent-fg hover:opacity-90',
-  secondary: 'bg-panel border border-border hover:bg-subtle',
-  ghost: 'hover:bg-subtle',
-  danger: 'bg-danger text-white hover:opacity-90'
+  // Nevora "Linear precision": borda de 1px e brilho interno no topo.
+  primary:
+    'border border-white/20 bg-accent font-semibold text-accent-fg shadow-[inset_0_1px_0_0_rgb(255_255_255/0.35),0_1px_3px_rgb(0_0_0/0.35)] hover:brightness-105',
+  secondary:
+    'border border-border bg-panel text-fg shadow-[inset_0_1px_0_0_rgb(var(--highlight)/0.06),0_1px_2px_rgb(0_0_0/0.15)] hover:border-muted/40 hover:bg-subtle',
+  ghost: 'text-muted hover:bg-fg/[0.05] hover:text-fg',
+  danger: 'border border-danger/40 bg-danger/15 text-danger hover:border-danger/60 hover:bg-danger/25'
 }
 
 export const Button = forwardRef<
@@ -42,8 +45,8 @@ export const Button = forwardRef<
       ref={ref}
       type={type}
       className={cn(
-        'inline-flex items-center gap-1.5 rounded-md font-medium transition disabled:cursor-not-allowed disabled:opacity-50',
-        size === 'sm' ? 'h-7 px-2 text-xs' : 'h-8 px-3 text-sm',
+        'inline-flex items-center gap-1.5 rounded-md font-medium transition-all duration-150 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:brightness-100',
+        size === 'sm' ? 'h-7 px-2.5 text-xs' : 'h-9 px-3 text-sm',
         buttonStyles[variant],
         className
       )}
@@ -58,7 +61,7 @@ export const Button = forwardRef<
 // ----------------------------------------------------------------- Inputs
 
 const control =
-  'rounded-md border border-border bg-panel px-2.5 text-sm placeholder:text-muted/70 disabled:opacity-60'
+  'rounded-md border border-border bg-field px-3 text-sm text-fg transition-colors placeholder:text-muted/60 hover:border-muted/40 focus:border-accent/60 disabled:opacity-60'
 /** Full width unless the caller sets an explicit width. */
 const width = (className?: string) => (className && /(^|\s)(w-|flex-1)/.test(className) ? '' : 'w-full')
 
@@ -66,7 +69,7 @@ export const Input = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInputE
   { className, ...rest },
   ref
 ) {
-  return <input ref={ref} className={cn(control, width(className), 'h-8', className)} {...rest} />
+  return <input ref={ref} className={cn(control, width(className), 'h-9', className)} {...rest} />
 })
 
 export const Textarea = forwardRef<HTMLTextAreaElement, TextareaHTMLAttributes<HTMLTextAreaElement>>(
@@ -74,7 +77,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaHTMLAttributes<H
     return (
       <textarea
         ref={ref}
-        className={cn(control, width(className), 'min-h-[80px] py-1.5', className)}
+        className={cn(control, width(className), 'min-h-[80px] py-2', className)}
         {...rest}
       />
     )
@@ -91,7 +94,7 @@ export function Select({
   placeholder?: string
 }) {
   return (
-    <select className={cn(control, width(className), 'h-8 pr-6', className)} {...rest}>
+    <select className={cn(control, width(className), 'h-9 pr-7', className)} {...rest}>
       {placeholder !== undefined && <option value="">{placeholder}</option>}
       {options.map((o) => (
         <option key={o.value} value={o.value}>
@@ -149,36 +152,53 @@ export function Field({
 
 // ----------------------------------------------------------------- Badge
 
+export type BadgeTone = 'neutral' | 'accent' | 'secondary' | 'success' | 'warning' | 'danger'
+
+const badgeTones: Record<BadgeTone, string> = {
+  neutral: 'border-border bg-fg/[0.06] text-muted',
+  accent: 'border-accent/35 bg-accent/15 text-accent',
+  secondary: 'border-secondary/35 bg-secondary/15 text-secondary',
+  success: 'border-success/35 bg-success/15 text-success',
+  warning: 'border-warning/35 bg-warning/15 text-warning',
+  danger: 'border-danger/35 bg-danger/15 text-danger'
+}
+
+/** Pill do Nevora. `tone` usa os tokens do tema; `color` aceita um hex vindo dos dados (ex.: cor de etapa). */
 export function Badge({
   children,
+  tone = 'neutral',
   color,
+  dot,
   className
 }: {
   children: ReactNode
+  tone?: BadgeTone
   color?: string | null
+  dot?: boolean
   className?: string
 }) {
   return (
     <span
       className={cn(
-        'inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-xs font-medium',
-        !color && 'bg-subtle text-muted',
+        'inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border px-2 py-0.5 text-xs font-medium',
+        !color && badgeTones[tone],
         className
       )}
-      style={color ? { backgroundColor: `${color}22`, color } : undefined}
+      style={color ? { backgroundColor: `${color}22`, borderColor: `${color}55`, color } : undefined}
     >
+      {dot && <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-current" />}
       {children}
     </span>
   )
 }
 
-const STATUS_COLORS: Record<string, string> = {
-  active: '#2563eb',
-  paused: '#a16207',
-  offer: '#16a34a',
-  closed: '#6b7280'
+const STATUS_TONES: Record<string, BadgeTone> = {
+  active: 'accent',
+  paused: 'warning',
+  offer: 'success',
+  closed: 'neutral'
 }
-export const statusColor = (status: string): string => STATUS_COLORS[status] ?? '#6b7280'
+export const statusTone = (status: string): BadgeTone => STATUS_TONES[status] ?? 'neutral'
 
 // ----------------------------------------------------------------- Modal
 
@@ -226,7 +246,7 @@ export function Modal({
   if (!open) return null
   return createPortal(
     <div
-      className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/40 p-4 pt-[8vh]"
+      className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-overlay/60 p-4 pt-[8vh] backdrop-blur-sm"
       onMouseDown={onClose}
     >
       <div
@@ -234,24 +254,27 @@ export function Modal({
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
-        className={cn('w-full rounded-lg border border-border bg-panel shadow-xl', width)}
+        className={cn('surface-dialog w-full rounded-xl border border-border bg-panel', width)}
         onMouseDown={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between border-b border-border px-4 py-2.5">
-          <h2 id={titleId} className="text-sm font-semibold">
-            {title}
-          </h2>
+        <div className="flex items-center justify-between border-b border-border px-5 py-3">
+          <div className="flex items-center gap-2">
+            <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-accent" />
+            <h2 id={titleId} className="text-base font-semibold">
+              {title}
+            </h2>
+          </div>
           <button
             data-close
             aria-label="Fechar"
-            className="rounded p-1 text-muted hover:bg-subtle"
+            className="rounded-md p-1 text-muted transition-colors hover:bg-subtle hover:text-fg"
             onClick={onClose}
           >
-            <X size={16} />
+            <X size={16} strokeWidth={1.75} />
           </button>
         </div>
-        <div className="max-h-[70vh] overflow-y-auto px-4 py-3 scroll-thin">{children}</div>
-        {footer && <div className="flex justify-end gap-2 border-t border-border px-4 py-2.5">{footer}</div>}
+        <div className="max-h-[70vh] overflow-y-auto px-5 py-4 scroll-thin">{children}</div>
+        {footer && <div className="flex justify-end gap-2 border-t border-border px-5 py-3">{footer}</div>}
       </div>
     </div>,
     document.body
@@ -292,8 +315,12 @@ export function ToastProvider({ children }: { children: ReactNode }) {
             key={t.id}
             role={t.tone === 'error' ? 'alert' : 'status'}
             className={cn(
-              'pointer-events-auto flex max-w-sm items-center gap-3 rounded-md border px-3 py-2 text-sm shadow-lg',
-              t.tone === 'error' ? 'border-danger/40 bg-panel text-danger' : 'border-border bg-panel'
+              'surface-dialog glass pointer-events-auto flex max-w-sm items-center gap-3 rounded-lg border px-3.5 py-2.5 text-sm',
+              t.tone === 'error'
+                ? 'border-danger/40 text-danger'
+                : t.tone === 'success'
+                  ? 'border-success/40'
+                  : 'border-border'
             )}
           >
             <span className="flex-1">{t.message}</span>
@@ -329,8 +356,8 @@ export function EmptyState({
   action?: ReactNode
 }) {
   return (
-    <div className="flex flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-border px-6 py-12 text-center">
-      <p className="font-medium">{title}</p>
+    <div className="flex flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-border bg-panel/40 px-6 py-12 text-center">
+      <p className="font-heading text-base font-semibold">{title}</p>
       {description && <p className="max-w-md text-sm text-muted">{description}</p>}
       {action && <div className="mt-2">{action}</div>}
     </div>
@@ -347,23 +374,26 @@ export function Tabs<T extends string>({
   onChange: (v: T) => void
 }) {
   return (
-    <div role="tablist" className="flex gap-1 border-b border-border">
+    <div
+      role="tablist"
+      className="inline-flex max-w-full items-center gap-1 overflow-x-auto rounded-lg border border-border bg-bg p-1"
+    >
       {tabs.map((t) => (
         <button
           key={t.value}
           role="tab"
           aria-selected={value === t.value}
           className={cn(
-            '-mb-px border-b-2 px-3 py-2 text-sm',
+            'rounded-md border px-3 py-1.5 text-sm font-medium transition-all',
             value === t.value
-              ? 'border-accent font-medium text-fg'
+              ? 'border-accent/40 bg-gradient-to-r from-accent/20 to-secondary/20 text-fg shadow-sm'
               : 'border-transparent text-muted hover:text-fg'
           )}
           onClick={() => onChange(t.value)}
         >
           {t.label}
           {t.count !== undefined && t.count > 0 && (
-            <span className="ml-1.5 text-xs text-muted">{t.count}</span>
+            <span className="ml-1.5 font-mono text-xs text-muted">{t.count}</span>
           )}
         </button>
       ))}
@@ -381,9 +411,9 @@ export function PageHeader({
   actions?: ReactNode
 }) {
   return (
-    <div className="flex items-start justify-between gap-4 border-b border-border px-6 py-4">
+    <div className="flex items-start justify-between gap-4 border-b border-border px-6 py-5">
       <div>
-        <h1 className="text-lg font-semibold">{title}</h1>
+        <h1 className="text-2xl font-semibold tracking-tight">{title}</h1>
         {subtitle && <div className="mt-0.5 text-sm text-muted">{subtitle}</div>}
       </div>
       {actions && <div className="flex shrink-0 items-center gap-2">{actions}</div>}
