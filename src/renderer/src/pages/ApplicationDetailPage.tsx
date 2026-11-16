@@ -120,7 +120,7 @@ export function ApplicationDetailPage() {
   return (
     <div className="flex min-h-full flex-col">
       <Header app={app} onEvent={setEventType} />
-      <div className="px-6">
+      <div className="px-6 pt-4">
         <Tabs
           value={tab}
           onChange={setTab}
@@ -178,10 +178,10 @@ function Header({ app, onEvent }: { app: ApplicationDetail; onEvent: (t: ManualE
               {app.companyName}
             </Link>
           </div>
-          <h1 className="truncate text-lg font-semibold">{app.title}</h1>
+          <h1 className="truncate text-2xl font-semibold tracking-tight">{app.title}</h1>
           <div className="mt-1.5 flex flex-wrap items-center gap-2 text-xs text-muted">
             <StatusBadge status={app.status} outcome={app.outcome} />
-            {app.stageName && <Badge>{app.stageName}</Badge>}
+            {app.stageName && <Badge tone="secondary">{app.stageName}</Badge>}
             {app.archivedAt && <Badge>Arquivada</Badge>}
             <span>
               Aplicada em {formatDate(app.appliedAt)} via {app.platform}
@@ -326,7 +326,7 @@ function Completeness({ app }: { app: ApplicationDetail }) {
   const pct = Math.round(app.completeness * 100)
   return (
     <div
-      className="w-56 shrink-0 rounded-md border border-border bg-panel p-2.5 text-xs"
+      className="surface w-56 shrink-0 rounded-md border border-border bg-panel p-2.5 text-xs"
       title="Campos que alimentam as métricas"
     >
       <div className="flex justify-between">
@@ -602,7 +602,7 @@ function DataTab({ app }: { app: ApplicationDetail }) {
           Editar dados
         </Button>
       </div>
-      <dl className="rounded-lg border border-border bg-panel px-4 py-2 text-sm">
+      <dl className="surface rounded-lg border border-border bg-panel px-4 py-2 text-sm">
         {row('Empresa', app.companyName)}
         {row('Cargo', app.title)}
         {row('Data da candidatura', formatDateTime(app.appliedAt))}
@@ -696,7 +696,7 @@ function ContactsTab({ app }: { app: ApplicationDetail }) {
           description="Recrutadores, gestores, entrevistadores e quem indicou aparecem aqui."
         />
       ) : (
-        <ul className="divide-y divide-border rounded-lg border border-border bg-panel">
+        <ul className="surface divide-y divide-border rounded-lg border border-border bg-panel">
           {app.contacts.map((c) => (
             <li key={`${c.contactId}-${c.role}`} className="flex items-center gap-3 px-3 py-2">
               <Link to={`/contatos?id=${c.contactId}`} className="font-medium hover:underline">
@@ -877,7 +877,7 @@ function FilesTab({ appId, attachments }: { appId: string; attachments: Attachme
         <p className="text-xs text-muted">O mesmo arquivo anexado várias vezes ocupa espaço uma vez só.</p>
       </div>
       {attachments.length > 0 && (
-        <ul className="divide-y divide-border rounded-lg border border-border bg-panel">
+        <ul className="surface divide-y divide-border rounded-lg border border-border bg-panel">
           {attachments.map((a) => (
             <li key={a.id} className="flex items-center gap-3 px-3 py-2">
               <button
@@ -935,7 +935,7 @@ function HistoryTab({ appId }: { appId: string }) {
   return (
     <ul className="max-w-3xl space-y-2">
       {data.map((h) => (
-        <li key={h.id} className="rounded-lg border border-border bg-panel px-3 py-2 text-sm">
+        <li key={h.id} className="surface rounded-lg border border-border bg-panel px-3 py-2 text-sm">
           <div className="flex gap-2">
             <span className="font-medium">
               {label('entityType', h.entityType)} · {label('auditAction', h.action)}

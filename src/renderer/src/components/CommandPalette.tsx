@@ -83,13 +83,13 @@ export function CommandPalette({
 
   return createPortal(
     <div
-      className="fixed inset-0 z-50 flex items-start justify-center bg-black/40 pt-[12vh]"
+      className="fixed inset-0 z-50 flex items-start justify-center bg-overlay/60 pt-[12vh] backdrop-blur-sm"
       onMouseDown={onClose}
     >
       <Command
         label="Busca global"
         shouldFilter={false}
-        className="w-full max-w-xl overflow-hidden rounded-lg border border-border bg-panel shadow-2xl"
+        className="surface-dialog glass w-full max-w-xl overflow-hidden rounded-xl border border-border"
         onMouseDown={(e) => e.stopPropagation()}
         onKeyDown={(e) => {
           if (e.key === 'Escape') {
@@ -103,7 +103,7 @@ export function CommandPalette({
           value={text}
           onValueChange={setText}
           placeholder="Buscar candidaturas, empresas, contatos, notas, arquivos… ou digitar um comando"
-          className="h-11 w-full border-b border-border bg-transparent px-4 text-sm outline-none"
+          className="h-12 w-full border-b border-border bg-transparent px-4 text-sm outline-none placeholder:text-muted/60"
         />
         <Command.List className="max-h-[50vh] overflow-y-auto p-1 scroll-thin">
           <Command.Empty className="px-3 py-6 text-center text-sm text-muted">Nada encontrado.</Command.Empty>
@@ -111,7 +111,7 @@ export function CommandPalette({
             <Command.Group
               key={type}
               heading={label('entityType', type)}
-              className="[&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-xs [&_[cmdk-group-heading]]:text-muted"
+              className="[&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:font-mono [&_[cmdk-group-heading]]:text-[11px] [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-wide [&_[cmdk-group-heading]]:text-muted"
             >
               {items.map((r) => {
                 const Icon = ICONS[r.entityType]
@@ -120,7 +120,7 @@ export function CommandPalette({
                     key={`${r.entityType}-${r.entityId}`}
                     value={`${r.entityType}-${r.entityId}`}
                     onSelect={() => openResult(r)}
-                    className="flex cursor-pointer items-start gap-2 rounded px-3 py-2 text-sm data-[selected=true]:bg-subtle"
+                    className="flex cursor-pointer items-start gap-2 rounded-md px-3 py-2 text-sm data-[selected=true]:bg-accent/15 data-[selected=true]:text-fg"
                   >
                     <Icon size={15} className="mt-0.5 shrink-0 text-muted" />
                     <div className="min-w-0">
@@ -135,18 +135,22 @@ export function CommandPalette({
           {filteredCommands.length > 0 && (
             <Command.Group
               heading="Comandos"
-              className="[&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-xs [&_[cmdk-group-heading]]:text-muted"
+              className="[&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:font-mono [&_[cmdk-group-heading]]:text-[11px] [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-wide [&_[cmdk-group-heading]]:text-muted"
             >
               {filteredCommands.map((c) => (
                 <Command.Item
                   key={c.label}
                   value={`cmd-${c.label}`}
                   onSelect={c.run}
-                  className="flex cursor-pointer items-center gap-2 rounded px-3 py-2 text-sm data-[selected=true]:bg-subtle"
+                  className="flex cursor-pointer items-center gap-2 rounded-md px-3 py-2 text-sm data-[selected=true]:bg-accent/15 data-[selected=true]:text-fg"
                 >
                   <c.icon size={15} className="text-muted" />
                   {c.label}
-                  {c.hint && <kbd className="ml-auto text-[10px] text-muted">{c.hint}</kbd>}
+                  {c.hint && (
+                    <kbd className="ml-auto rounded border border-border bg-fg/[0.06] px-1.5 font-mono text-[10px] text-muted">
+                      {c.hint}
+                    </kbd>
+                  )}
                 </Command.Item>
               ))}
             </Command.Group>
