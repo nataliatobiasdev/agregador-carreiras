@@ -10,7 +10,7 @@ on:
 
 permissions:
   contents: read
-  pages: write
+  pages: write # único workflow que publica no Pages; não adicionar outro (ex.: static.yml)
   id-token: write
 
 concurrency:
@@ -36,6 +36,8 @@ jobs:
           cache: pnpm
           cache-dependency-path: docs/pnpm-lock.yaml
       - run: pnpm install --frozen-lockfile --ignore-workspace
+      - uses: actions/configure-pages@v5
+        if: github.event_name != 'pull_request'
       - run: pnpm build
       - uses: actions/upload-pages-artifact@v3
         if: github.event_name != 'pull_request'
