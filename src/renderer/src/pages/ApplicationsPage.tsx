@@ -55,6 +55,8 @@ export function ApplicationsPage({ onNew }: { onNew: () => void }) {
   )
   const { data: apps, isLoading } = useCam('applications.list', filter)
   const { data: companies } = useCam('companies.list')
+  const pending = useCam('vagas1000.list', undefined, { refetchInterval: 5000 })
+  const markApplied = useCamMutation('vagas1000.markApplied', { success: 'Candidatura registrada' })
   const filtered = statuses.length > 0 || companyId || from || to || text || includeArchived
 
   const toggleStatus = (s: ApplicationStatus) =>
@@ -92,6 +94,18 @@ export function ApplicationsPage({ onNew }: { onNew: () => void }) {
           </>
         }
       />
+      {pending.isError && <p role="alert" className="border-b border-border px-6 py-3 text-sm text-red-400">Não foi possível carregar as vagas adicionadas pelo vagas1000. <button className="underline" onClick={() => void pending.refetch()}>Tentar novamente</button></p>}
+      {!!pending.data?.length && <section className="border-b border-border px-6 py-4">
+        <div className="mb-2 flex items-center gap-3"><h2 className="font-semibold">Vagas para candidatar-se</h2>
+          <button className="text-sm text-accent" onClick={() => void pending.refetch()}>Atualizar</button></div>
+        <p className="mb-3 text-sm text-muted">Adicionadas pelo vagas1000. Registre a candidatura somente depois de enviá-la.</p>
+        <div className="space-y-3">{pending.data.map((job) => <div key={job.key} className="rounded-md border border-border p-3">
+          <div className="flex flex-wrap items-center gap-3"><strong>{job.title}</strong><span>{job.company}</span>
+            {/^https?:\/\//i.test(job.url) && <a className="text-accent" href={job.url} target="_blank" rel="noreferrer">Abrir vaga</a>}
+            <Button disabled={markApplied.isPending} onClick={() => void markApplied.mutateAsync({ key: job.key }).then((r) => navigate(`/candidaturas/${r.id}`))}>Já me candidatei</Button>
+          </div><details className="mt-2 text-sm"><summary>Dados da vaga</summary><pre className="mt-2 max-h-80 overflow-auto whitespace-pre-wrap">{job.details}</pre></details>
+        </div>)}</div>
+      </section>}
       <div className="flex flex-wrap items-center gap-2 border-b border-border px-6 py-2.5">
         <Input
           className="w-56"

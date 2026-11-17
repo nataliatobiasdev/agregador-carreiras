@@ -8,12 +8,13 @@ import { call, errorMessage } from './api'
 export function useCam<C extends ChannelName>(
   channel: C,
   input?: ChannelInput<C>,
-  options: { enabled?: boolean } = {}
+  options: { enabled?: boolean; refetchInterval?: number } = {}
 ) {
   return useQuery({
     queryKey: [channel, input ?? null],
     queryFn: () => (call as (c: C, i?: ChannelInput<C>) => Promise<ChannelOutput<C>>)(channel, input),
-    enabled: options.enabled
+    enabled: options.enabled,
+    refetchInterval: options.refetchInterval
   })
 }
 

@@ -235,6 +235,8 @@ const none = z.undefined()
 const byId = z.object({ id })
 
 export const contracts = {
+  'vagas1000.list': ch<Array<{ key: string; title: string; company: string; url: string; addedAt: string; details: string }>>()(none),
+  'vagas1000.markApplied': ch<{ id: string }>()(z.object({ key: z.string().min(1).max(2000) })),
   'app.info': ch<D.AppInfo>()(none),
   'app.openDataFolder': ch<void>()(none),
   'app.openExternal': ch<void>()(z.object({ url: httpUrl })),
