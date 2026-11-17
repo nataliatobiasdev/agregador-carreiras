@@ -18,6 +18,7 @@ import {
 import { formatDate, relativeDays } from '../lib/format'
 import { useCam, useCamMutation } from '../lib/hooks'
 import { label } from '../i18n/pt-BR'
+import { PendingVacancies } from '../components/PendingVacancies'
 
 type View = 'table' | 'list'
 
@@ -94,18 +95,24 @@ export function ApplicationsPage({ onNew }: { onNew: () => void }) {
           </>
         }
       />
-      {pending.isError && <p role="alert" className="border-b border-border px-6 py-3 text-sm text-red-400">Não foi possível carregar as vagas adicionadas pelo vagas1000. <button className="underline" onClick={() => void pending.refetch()}>Tentar novamente</button></p>}
-      {!!pending.data?.length && <section className="border-b border-border px-6 py-4">
-        <div className="mb-2 flex items-center gap-3"><h2 className="font-semibold">Vagas para candidatar-se</h2>
-          <button className="text-sm text-accent" onClick={() => void pending.refetch()}>Atualizar</button></div>
-        <p className="mb-3 text-sm text-muted">Adicionadas pelo vagas1000. Registre a candidatura somente depois de enviá-la.</p>
-        <div className="space-y-3">{pending.data.map((job) => <div key={job.key} className="rounded-md border border-border p-3">
-          <div className="flex flex-wrap items-center gap-3"><strong>{job.title}</strong><span>{job.company}</span>
-            {/^https?:\/\//i.test(job.url) && <a className="text-accent" href={job.url} target="_blank" rel="noreferrer">Abrir vaga</a>}
-            <Button disabled={markApplied.isPending} onClick={() => void markApplied.mutateAsync({ key: job.key }).then((r) => navigate(`/candidaturas/${r.id}`))}>Já me candidatei</Button>
-          </div><details className="mt-2 text-sm"><summary>Dados da vaga</summary><pre className="mt-2 max-h-80 overflow-auto whitespace-pre-wrap">{job.details}</pre></details>
-        </div>)}</div>
-      </section>}
+      {pending.isError && (
+        <div role="alert" className="border-b border-border px-6 py-3 text-sm text-danger">
+          Não foi possível carregar as vagas adicionadas pelo vagas1000.{' '}
+          <Button variant="ghost" size="sm" onClick={() => void pending.refetch()}>
+            Tentar novamente
+          </Button>
+        </div>
+      )}
+      {!!pending.data?.length && (
+        <PendingVacancies
+          jobs={pending.data}
+          busy={markApplied.isPending}
+          onRefresh={() => void pending.refetch()}
+          onApply={(key) =>
+            void markApplied.mutateAsync({ key }).then((r) => navigate(`/candidaturas/${r.id}`))
+          }
+        />
+      )}
       <div className="flex flex-wrap items-center gap-2 border-b border-border px-6 py-2.5">
         <Input
           className="w-56"
@@ -177,7 +184,11 @@ export function ApplicationsPage({ onNew }: { onNew: () => void }) {
           ) : (
             <EmptyState
               title="Nenhuma candidatura registrada ainda"
-              description="Cada candidatura que você fizer entra aqui. Com 4 campos (empresa, cargo, data e plataforma) o registro leva segundos."
+              description={
+                pending.data?.length
+                  ? 'Depois de se candidatar a uma vaga salva, selecione “Já me candidatei” para acompanhar o processo aqui.'
+                  : 'Cada candidatura que você fizer entra aqui. Com 4 campos (empresa, cargo, data e plataforma) o registro leva segundos.'
+              }
               action={
                 <Button variant="primary" icon={<Plus size={14} />} onClick={onNew}>
                   Registrar a primeira

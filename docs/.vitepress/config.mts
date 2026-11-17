@@ -28,6 +28,7 @@ export default withMermaid(
         { text: 'Arquitetura', link: '/arquitetura/', activeMatch: '/arquitetura/' },
         { text: 'Dados', link: '/dados/modelo', activeMatch: '/dados/' },
         { text: 'Qualidade', link: '/qualidade/testes', activeMatch: '/qualidade/' },
+        { text: 'Releases e deploys', link: '/entregas' },
         { text: 'Decisões', link: '/decisoes' },
         { text: 'Roadmap', link: '/roadmap', activeMatch: '/(roadmap|planejado/)' },
         { text: 'v1.0', items: [{ text: 'PR #1: V1.0', link: `${repo}/pull/1` }, { text: 'Actions', link: `${repo}/actions` }] }
@@ -68,7 +69,8 @@ export default withMermaid(
           items: [
             { text: 'Testes', link: '/qualidade/testes' },
             { text: 'CI e incidentes', link: '/qualidade/ci' },
-            { text: 'Instalador Windows', link: '/qualidade/instalador' }
+            { text: 'Instalador Windows', link: '/qualidade/instalador' },
+            { text: 'Releases e deploys', link: '/entregas' }
           ]
         },
         {
@@ -109,7 +111,7 @@ export default withMermaid(
       langMenuLabel: 'Idioma',
       notFound: { title: 'Página não encontrada', quote: 'Este endereço não existe na documentação.', linkText: 'Voltar ao início' },
       footer: {
-        message: 'Documentação técnica do Career Application Manager · V1.0 com Nevora e ícone novo',
+        message: 'Documentação técnica do Career Application Manager · Nevora',
         copyright: 'Copyright © 2026 Natalia Tobias'
       }
     },

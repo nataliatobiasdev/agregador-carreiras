@@ -4,6 +4,7 @@
 | --- | --- | --- |
 | `0000_init.sql` | Gerada pelo `drizzle-kit` a partir de `schema.ts` | 27 tabelas, índices, FKs, CHECKs |
 | `0001_search_and_seed.sql` | Escrita à mão | FTS5, triggers de imutabilidade, dados iniciais |
+| `0002_vagas1000.sql` | Escrita à mão | Vagas recebidas do vagas1000 e vínculo opcional com a candidatura |
 
 O executor (`src/main/db/migrate.ts`) empacota os `.sql` no build via `import.meta.glob`, então o app instalado não depende de arquivos soltos. Cada arquivo é dividido nos marcadores `--> statement-breakpoint` do drizzle-kit, e as migrações aplicadas ficam registradas em `_migrations`.
 

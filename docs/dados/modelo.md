@@ -63,6 +63,7 @@ erDiagram
 | Produtividade | `tasks`, `reminders`, `automation_rules`, `goals` | Só schema (V1.1) |
 | Documentos | `documents`, `document_versions`, `templates` | Só schema (V1.1) |
 | Infra | `_migrations`, `search_index` (FTS5) | Completo |
+| Integração | `vagas1000_inbox` | Vagas pendentes recebidas localmente e vínculo com a candidatura |
 
 ## Integridade garantida pelo banco
 

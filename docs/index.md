@@ -21,7 +21,7 @@ hero:
 features:
   - icon: 🧭
     title: Escopo deliberado
-    details: Registro manual de candidaturas. Sem scraping, sem importação de vagas, sem eventos presumidos.
+    details: Registro manual de candidaturas e vagas pendentes recebidas localmente do vagas1000, sem eventos presumidos.
     link: /guia/visao
   - icon: 🏗️
     title: Electron + TypeScript
@@ -40,7 +40,7 @@ features:
     details: Zip com manifesto de hashes, integrity_check e restauração atômica com volta automática.
     link: /dados/backup
   - icon: ✅
-    title: 78 testes e CI no Windows
+    title: Testes e CI no Windows
     details: Unidade, integração com SQLite real e ponta a ponta com Playwright no app empacotado.
     link: /qualidade/testes
   - icon: 🎨
