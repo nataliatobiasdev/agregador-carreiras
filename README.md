@@ -1,5 +1,9 @@
 # Career Application Manager
 
+### Vagas do vagas1000
+
+Abra o CAM atualizado ao menos uma vez e, no painel integrado do vagas1000, abra uma vaga e selecione **Adicionar ao CAM**. Ela aparece em **Vagas para candidatar-se** na tela Candidaturas, com os dados recebidos da vaga. Depois de enviar a candidatura, selecione **Já me candidatei** para registrá-la com a data atual e acompanhar o processo. Adicionar a mesma vaga novamente não cria uma cópia.
+
 App desktop para Windows, local e offline, para registrar as candidaturas que você fez e acompanhar cada processo seletivo até o fim.
 
 > Eu encontro as vagas. Eu me candidato. Eu registro a candidatura. O aplicativo organiza, documenta, acompanha, lembra e analisa todo o restante.

@@ -8,7 +8,7 @@ import { contextBridge, ipcRenderer, webUtils } from 'electron'
 
 const bridge = {
   invoke: (channel: string, input: unknown): Promise<unknown> => {
-    if (!/^[a-zA-Z]+\.[a-zA-Z]+$/.test(channel)) return Promise.reject(new Error('invalid channel'))
+    if (!/^[a-zA-Z][a-zA-Z0-9]*\.[a-zA-Z]+$/.test(channel)) return Promise.reject(new Error('invalid channel'))
     return ipcRenderer.invoke(`cam:${channel}`, input)
   },
   pathForFile: (file: File): string => webUtils.getPathForFile(file),

@@ -19,6 +19,7 @@ import * as notes from '../services/notes'
 import * as search from '../services/search'
 import { getSetting, setSetting, UI_SETTING_KEYS } from '../services/settings'
 import * as trash from '../services/trash'
+import * as vagas1000 from '../services/vagas1000'
 import { suggestPlatformFromUrl } from '../domain/normalize'
 
 export interface ElectronBridge {
@@ -45,6 +46,8 @@ const uiKey = (key: string): string => {
 }
 
 export const handlers: HandlerTable = {
+  'vagas1000.list': (ctx) => vagas1000.listPending(ctx),
+  'vagas1000.markApplied': (ctx, i) => vagas1000.markApplied(ctx, i.key),
   'app.info': (ctx, _i, b) => ({
     version: ctx.appVersion,
     dataDir: ctx.paths.root,
