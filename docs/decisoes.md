@@ -1,12 +1,12 @@
 # Decisões (ADRs)
 
-Registro das decisões de arquitetura no formato contexto → decisão → consequências. Status de todas: **aceita**. As de 1 a 13 vêm da V1.0; 14 a 16 vieram depois, com o Nevora, o ícone e o deploy da documentação.
+Registro das decisões de arquitetura no formato contexto → decisão → consequências. As de 1 a 13 vêm da V1.0; 14 a 16 vieram depois. A ADR-1 foi revista com a integração local ao vagas1000.
 
 ## Resumo
 
 | # | Decisão | Ganho | Custo aceito |
 | --- | --- | --- | --- |
-| 1 | Sem scraping nem importação | Escopo pequeno e confiável | Cadastro manual (mitigado pelo cadastro rápido) |
+| 1 | Sem scraping no CAM; vagas locais pendentes | Escopo pequeno, com confirmação manual da candidatura | Integração local com o vagas1000 |
 | 2 | Electron + TypeScript, sem Python | Uma linguagem, um instalador | Peso do Chromium |
 | 3 | Eventos como fonte da verdade | Retroativos corretos, histórico, analytics | Recalcular a candidatura a cada evento |
 | 4 | Integridade no SQL | Bug de código não grava dado inválido | Mudar enum exige migração |
@@ -24,6 +24,10 @@ Registro das decisões de arquitetura no formato contexto → decisão → conse
 | 16 | Um único workflow publica o Pages | Site sempre igual ao `docs/` da `main` | Fonte do Pages precisa ser “GitHub Actions” |
 
 ## ADR-1: Sem scraping nem importação de vagas
+
+::: info Decisão revista
+O trecho abaixo registra a decisão original da V1.0. O [PR #9](https://github.com/nataliatobiasdev/agregador-carreiras/pull/9) acrescentou a recepção local de vagas pendentes do vagas1000. A candidatura e seus eventos continuam exigindo confirmação da usuária; o CAM não faz scraping.
+:::
 
 **Contexto.** Um primeiro plano integrava o scraper de vagas que existe em paralelo. A Natalia rejeitou: ela encontra as vagas e se candidata; o app cuida do resto.
 **Decisão.** O CAM só registra candidaturas digitadas pela usuária e eventos confirmados por ela. Nenhum código de rede de saída.

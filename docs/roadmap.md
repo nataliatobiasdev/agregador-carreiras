@@ -12,6 +12,7 @@
 | Documentação no GitHub Pages | <span class="tag done">entregue</span> | PRs [#2](https://github.com/nataliatobiasdev/agregador-carreiras/pull/2), [#3](https://github.com/nataliatobiasdev/agregador-carreiras/pull/3) e [#4](https://github.com/nataliatobiasdev/agregador-carreiras/pull/4) |
 | Design system Nevora | <span class="tag done">entregue</span> | [PR #5](https://github.com/nataliatobiasdev/agregador-carreiras/pull/5) · [Identidade visual](/guia/identidade-visual) |
 | Ícone novo do app | <span class="tag done">entregue</span> | [PR #7](https://github.com/nataliatobiasdev/agregador-carreiras/pull/7) · [Identidade visual](/guia/identidade-visual#icone-do-app) |
+| Vagas pendentes do vagas1000 | <span class="tag done">entregue</span> | [PR #9](https://github.com/nataliatobiasdev/agregador-carreiras/pull/9) · [Como usar](/guia/funcionalidades#vagas-recebidas-do-vagas1000) |
 | R1.0.1 a R1.5 | <span class="tag plan">planejado</span> | Abaixo |
 
 ## Releases planejadas
@@ -42,7 +43,7 @@ flowchart LR
 | **R1.4** Painel honesto | Volume, funil, tempo de resposta, silêncio × rejeição; percentuais ocultos com n < 5; CSV | A definir | 4 a 5 dias |
 | **R1.5** Conquistas e polimento | Conquistas e marcos, kanban, painel lateral no lugar da página de detalhe, relatório semanal | A definir | 5 a 6 dias |
 
-Regras que valem para todas: escopo manual (sem scraping, sem importar vagas), rede continua bloqueada, só tokens do Nevora, migração só para frente com backup antes, todo dado derivado recalculável do zero, um PR por release com CI Windows verde e `docs/` atualizado no mesmo PR.
+Regras que valem para todas: sem scraping no CAM; a integração local com o vagas1000 preserva a confirmação manual da candidatura. A rede continua bloqueada, as interfaces usam os tokens Nevora e as migrações são só para frente, com backup antes.
 
 ## Decisões em aberto
 

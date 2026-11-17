@@ -13,6 +13,10 @@
 
 ## Cadastro rápido
 
+### Vagas recebidas do vagas1000
+
+Na tela **Candidaturas**, vagas enviadas pelo painel integrado do vagas1000 aparecem em **Vagas para candidatar-se**, com os dados disponíveis e a descrição legível. A vaga é guardada como pendente e não cria uma candidatura enviada. Após enviar a candidatura, clique em **Já me candidatei**: o CAM cria o registro com a data atual e abre o acompanhamento. Envios repetidos da mesma vaga não criam duplicatas.
+
 **Ctrl+N** abre um diálogo de 4 campos: empresa, cargo, data e plataforma. **Enter** salva, **Ctrl+Enter** salva e abre o detalhe. “Mais detalhes” mostra o formulário completo, com a seção Avançado (faixa salarial com moeda e período, pretensão, competências, requisitos, descrição da vaga, visto, idioma). O app sugere a plataforma pela URL (análise local), avisa se já há candidaturas ativas na mesma empresa e mostra a completude do registro.
 
 <img class="shot" src="/img/cadastro-rapido.png" alt="Diálogo de cadastro rápido com empresa, cargo, data e plataforma">
