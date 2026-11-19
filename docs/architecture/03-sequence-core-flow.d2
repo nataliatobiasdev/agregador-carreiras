@@ -1,0 +1,28 @@
+direction: right
+vars: {
+  d2-config: {
+    theme-id: 200
+    layout-engine: elk
+  }
+}
+fluxo: "Registrar candidatura pendente" {
+  shape: sequence_diagram
+  pessoa: "Pessoa usuária"
+  renderer: "Renderer React"
+  preload: "Preload"
+  main: "Main: dispatch / handlers"
+  service: "services/vagas1000.ts"
+  db: "SQLite cam.db"
+  pessoa -> renderer: "Seleciona Já me candidatei"
+  renderer -> preload: "vagas1000.markApplied({key})"
+  preload -> main: "ipcRenderer.invoke('cam:vagas1000.markApplied')"
+  main -> main: "Valida origem e entrada Zod"
+  main -> service: "markApplied(ctx, key)"
+  service -> db: "Transação: lê inbox e cria candidatura"
+  service -> db: "Vincula application_id à inbox"
+  db -> service: "Commit e id"
+  service -> main: "{id}"
+  main -> preload: "Result<{id}>"
+  preload -> renderer: "Resultado"
+  renderer -> pessoa: "Abre acompanhamento"
+}

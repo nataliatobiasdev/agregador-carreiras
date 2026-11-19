@@ -1,54 +1,14 @@
----
-layout: home
-title: Início
-hero:
-  name: Career Application Manager
-  text: Documentação técnica
-  tagline: App desktop Windows, local e offline, para registrar candidaturas e acompanhar cada processo seletivo até o desfecho.
-  image:
-    src: /logo.png
-    alt: Ícone do CAM, estrela-bússola sobre degraus
-  actions:
-    - theme: brand
-      text: Começar pela visão geral
-      link: /guia/visao
-    - theme: alt
-      text: Arquitetura
-      link: /arquitetura/
-    - theme: alt
-      text: Ver no GitHub
-      link: https://github.com/nataliatobiasdev/agregador-carreiras
-features:
-  - icon: 🧭
-    title: Escopo deliberado
-    details: Registro manual de candidaturas e vagas pendentes recebidas localmente do vagas1000, sem eventos presumidos.
-    link: /guia/visao
-  - icon: 🏗️
-    title: Electron + TypeScript
-    details: Três processos com fronteira rígida, IPC tipado com Zod e services transacionais testáveis fora do Electron.
-    link: /arquitetura/
-  - icon: 🗂️
-    title: Linha do tempo como verdade
-    details: Status e etapa são derivados por uma função pura a partir de eventos datados, inclusive retroativos.
-    link: /dados/linha-do-tempo
-  - icon: 🛡️
-    title: Integridade no banco
-    details: CHECKs, FKs, índices parciais e triggers garantem as regras mesmo com bug no código.
-    link: /dados/modelo
-  - icon: 💾
-    title: Backup verificável
-    details: Zip com manifesto de hashes, integrity_check e restauração atômica com volta automática.
-    link: /dados/backup
-  - icon: ✅
-    title: Testes e CI no Windows
-    details: Unidade, integração com SQLite real e ponta a ponta com Playwright no app empacotado.
-    link: /qualidade/testes
-  - icon: 🎨
-    title: Design system Nevora
-    details: Violeta e teal, Space Grotesk e JetBrains Mono empacotadas, tema escuro de referência e ícone novo.
-    link: /guia/identidade-visual
-  - icon: 🧩
-    title: Próximos passos
-    details: Rotina diária com tarefas e lembretes, e a Jornada, um progresso semanal medido só pelo que você faz. Planejado.
-    link: /roadmap
----
+# Career Application Manager
+
+O CAM é um aplicativo desktop para Windows que registra candidaturas e acompanha processos seletivos em dados locais. O renderer React acessa operações do processo principal Electron por uma ponte IPC; o armazenamento é SQLite e arquivos no dispositivo. A integração opcional com o vagas1000 usa uma tabela no banco do CAM, não um serviço de rede.
+
+**Linha de base auditada:** `main` no commit [`511dacd`](https://github.com/nataliatobiasdev/agregador-carreiras/tree/511dacd12eeaaf47eefa418dcd9f8475d9488b70), pacote `1.0.0`, em 19/11/2026. Esta documentação descreve o código observado nessa revisão; planos de produto não são tratados como recursos implementados.
+
+| Seção | Conteúdo |
+| --- | --- |
+| [Visões estruturais](/architecture/) | Contexto C4, contêineres e sequência em D2 |
+| [Contratos e dados](/contratos) | IPC, fronteiras de confiança e persistência |
+| [Build e operação](/operacao) | Inicialização, distribuição, backup e limites |
+| [Decisões arquiteturais](/adr/) | ADRs retrospectivos, separados das visões |
+
+[Código-fonte](https://github.com/nataliatobiasdev/agregador-carreiras) · [Releases](https://github.com/nataliatobiasdev/agregador-carreiras/releases) · [Documentação do vagas1000](https://nataliatobiasdev.github.io/vagas-1000/)

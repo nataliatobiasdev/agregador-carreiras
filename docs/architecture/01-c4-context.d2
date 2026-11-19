@@ -1,0 +1,15 @@
+direction: right
+vars: {
+  d2-config: {
+    theme-id: 200
+    layout-engine: elk
+  }
+}
+usuario: "Pessoa usuária\nWindows" { shape: person }
+cam: "Career Application Manager\nSistema desktop local" { shape: rectangle }
+vagas: "vagas1000\nAplicativo local opcional" { shape: rectangle }
+navegador: "Navegador padrão\nAplicativo externo" { shape: rectangle }
+usuario -> cam: "Registra e acompanha candidaturas"
+usuario -> vagas: "Envia vaga pendente ao CAM"
+vagas -> cam: "Escreve e consulta inbox\nSQLite local compartilhado"
+cam -> navegador: "Abre links HTTP(S) por shell.openExternal"
