@@ -8,7 +8,9 @@ App desktop para Windows, local e offline, para registrar as candidaturas que vo
 
 > Eu encontro as vagas. Eu me candidato. Eu registro a candidatura. O aplicativo organiza, documenta, acompanha, lembra e analisa todo o restante.
 
-O app não busca, importa nem cria candidaturas sozinho, e não faz nenhuma chamada de rede.
+O CAM não busca vagas na internet nem envia candidaturas. Pode receber vagas localmente do vagas1000 como pendentes; a candidatura só é registrada após uma ação da usuária. O aplicativo funciona sem chamadas de rede.
+
+**Documentação:** [CAM Docs](https://nataliatobiasdev.github.io/agregador-carreiras/) · **Entregas:** [histórico](docs/entregas.md) · **Projeto de captura:** [vagas1000](https://github.com/nataliatobiasdev/vagas-1000)
 
 ## O que a V1.0 faz
 

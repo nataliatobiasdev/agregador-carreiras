@@ -1,6 +1,6 @@
 # Por que Electron + TypeScript, sem Python
 
-A stack foi decidida pela Natalia em 16/11/2026, depois de um primeiro plano que previa integração com o scraper (em Python) e foi rejeitado junto com a ideia de importar vagas. Sem a integração, Python deixou de ter função no app.
+A stack foi decidida em 16/11/2026 para manter o CAM independente de Python. A integração posterior com o vagas1000 transfere oportunidades localmente para o banco do CAM; não embute o scraper nem adiciona Python ao aplicativo.
 
 | Critério | Electron + TS (escolhido) | Alternativa |
 | --- | --- | --- |

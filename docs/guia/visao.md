@@ -21,7 +21,7 @@ O **Career Application Manager (CAM)** é o sistema de registro de uma busca de 
 | Notas, anexos, contatos, empresas | Comunicação automática com recrutadores |
 | Dados 100% locais, sem rede | Criar candidaturas ou presumir eventos automaticamente |
 
-A coleta de vagas pertence ao vagas1000. A integração grava uma oportunidade pendente no banco local do CAM; registrar uma candidatura continua sendo uma ação da usuária. O CAM mantém a sessão do Electron sem requisições de rede ao conteúdo externo (veja [Segurança](/arquitetura/seguranca)).
+A coleta de vagas pertence ao [vagas1000](https://nataliatobiasdev.github.io/vagas-1000/). A integração grava uma oportunidade pendente no banco local do CAM; registrar uma candidatura continua sendo uma ação da usuária. O CAM mantém a sessão do Electron sem requisições de rede ao conteúdo externo (veja [Segurança](/arquitetura/seguranca)).
 
 ## Estado documentado
 

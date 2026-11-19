@@ -46,7 +46,9 @@ sequenceDiagram
   T->>E: cria follow_up_sent
 ```
 
-## Mudanças no banco (`0002_routine`)
+## Mudanças planejadas no banco
+
+O número da migração será definido na implementação; `0002_vagas1000.sql` já está em uso.
 
 Aditivas: índice `tasks(application_id, status)`, índice único `reminders(task_id, remind_at)`, coluna opcional `tasks.notes` e as chaves de configuração `reminders.defaultTime`, `notifications.enabled`, `app.closeToTray` e `app.openAtLogin`.
 

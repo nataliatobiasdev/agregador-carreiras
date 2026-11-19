@@ -37,13 +37,15 @@ flowchart LR
 | --- | --- | --- | --- |
 | **R1.0.1** Arrumar a casa | Rótulo na coluna Plataforma, atalhos Ctrl+1–7, cor da janela pelo tema, tela Sobre com versão e link de Releases, indicador “último backup”, quebrar o detalhe em componentes, invalidação de cache por domínio, movimento reduzido e texto mínimo de 12 px, teste de acessibilidade (axe), banco de referência V1.0 e teste de atualização, workflow de Release por tag | Nenhuma | 2 a 3 dias |
 | **R1.0.2** Backup protegido | Cópia da pasta extra em zip AES-256, senha guardada com `safeStorage`, restaurar pedindo senha | Nenhuma | 1 a 2 dias |
-| **R1.1** Rotina diária | Tarefas, follow-up confirmado, lembretes e notificação nativa, bandeja, iniciar com o Windows, tela Hoje · [detalhes](/planejado/rotina) | `0002_routine` | 6 a 8 dias |
-| **R1.2** Jornada | Pontos, nível, metas e sequência semanais, missões diárias, tudo desligável · [detalhes](/planejado/jornada) | `0003_journey` | 5 a 7 dias |
+| **R1.1** Rotina diária | Tarefas, follow-up confirmado, lembretes e notificação nativa, bandeja, iniciar com o Windows, tela Hoje · [detalhes](/planejado/rotina) | A definir | 6 a 8 dias |
+| **R1.2** Jornada | Pontos, nível, metas e sequência semanais, missões diárias, tudo desligável · [detalhes](/planejado/jornada) | A definir | 5 a 7 dias |
 | **R1.3** Dossiê | Aba Contexto, cases STAR, plano de etapas previsto × realizado, entrevistas como entidade | A definir | 8 a 10 dias |
 | **R1.4** Painel honesto | Volume, funil, tempo de resposta, silêncio × rejeição; percentuais ocultos com n < 5; CSV | A definir | 4 a 5 dias |
 | **R1.5** Conquistas e polimento | Conquistas e marcos, kanban, painel lateral no lugar da página de detalhe, relatório semanal | A definir | 5 a 6 dias |
 
 Regras que valem para todas: sem scraping no CAM; a integração local com o vagas1000 preserva a confirmação manual da candidatura. A rede continua bloqueada, as interfaces usam os tokens Nevora e as migrações são só para frente, com backup antes.
+
+Os identificadores de migração dos planos originais são provisórios: `0002_vagas1000.sql` já está em uso pela integração.
 
 ## Decisões em aberto
 

@@ -55,7 +55,9 @@ flowchart LR
   RULES -.->|"teste: nenhuma regra lê<br/>status, outcome ou oferta"| RULES
 ```
 
-## Mudanças no banco (`0003_journey`)
+## Mudanças planejadas no banco
+
+O número da migração será definido na implementação, após as migrações já existentes e as que forem entregues antes da Jornada.
 
 Novas tabelas `game_ledger` (único em regra + origem) e `game_pauses`; `goals` reconstruída com mais métricas. `game_ledger` vai no backup, mas restaurar sempre a reconstrói.
 
