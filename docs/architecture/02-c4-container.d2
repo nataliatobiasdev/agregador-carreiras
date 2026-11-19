@@ -1,0 +1,23 @@
+direction: right
+vars: {
+  d2-config: {
+    theme-id: 200
+    layout-engine: elk
+  }
+}
+usuario: "Pessoa usuária" { shape: person }
+host_windows: "Ambiente Cliente (Windows OS)" {
+  renderer: "Renderer\nChromium · React" { shape: rectangle }
+  preload: "Preload\ncontextBridge · IPC" { shape: rectangle }
+  main: "Main\nElectron · Node.js\nhandlers, services, timers" { shape: rectangle }
+  database: "cam.db\nSQLite · better-sqlite3" { shape: cylinder }
+  files: "files/ · backups/ · logs/\n%APPDATA%/CAM" { shape: cylinder }
+  vagas: "vagas1000\nprocesso local opcional" { shape: rectangle }
+  renderer -> preload: "window.camBridge.invoke"
+  preload -> main: "ipcRenderer.invoke: cam:<domínio>.<ação>"
+  main -> renderer: "cam:data-changed"
+  main -> database: "SQL local · WAL"
+  main -> files: "File I/O · anexos e backups"
+  vagas -> database: "SQLite: vagas1000_inbox"
+}
+usuario -> host_windows.renderer: "Opera interface"
